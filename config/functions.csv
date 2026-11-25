@@ -6515,7 +6515,7 @@ address,size,status,category,name,src_file
 0x002ec530,2264,matching,camp,camp_func_002ec530,src/engine/leaf_batch46_c.cpp
 0x002ece08,388,non_matching,script_vm,script_vm_func_002ece08,src/engine/leaf_batch32_c.cpp
 0x002ecf8c,176,matching,camp,camp_func_002ecf8c,src/engine/leaf_batch38_b.cpp
-0x002ed03c,932,matching,unknown,func_002ed03c,src/engine/leaf_batch45_b.cpp
+0x002ed03c,932,non_matching,unknown,func_002ed03c,src/engine/leaf_batch45_b.cpp
 0x002ed3e0,36,matching,unknown,func_002ed3e0,src/engine/leaf_batch23_b.cpp
 0x002ed404,120,non_matching,camp,camp_func_002ed404,src/engine/leaf_batch30_b.cpp
 0x002ed47c,144,non_matching,engine,engine_func_002ed47c,src/engine/leaf_batch30_c.cpp
