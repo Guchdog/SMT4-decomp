@@ -277,53 +277,78 @@ extern "C" void ui_func_0025beb8() {
     }
 }
 
+extern "C" u32 camp_func_0029cbec(u32 id, const u8* state);
+extern "C" u32 shop_func_002923d0(u32 id, const u8* state);
+extern "C" u32 Tbb_GetGlobalSubTable(u32 table_id, u32 sub_id);
+extern "C" u32 Tbb_GetPayloadData(u32 tbl);
+extern "C" u32 Tbb_GetRowCount(u32 tbl);
+extern "C" u32 func_001b0454(u32 zero, const u8* state);
+
 // DECOMP_FUNC(0x0026cae4, 328)
-extern "C" __attribute__((naked)) void camp_func_0026cae4() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4070, 0xe92d, 0x0000, 0xe3a0\n"
-        ".hword 0x266c, 0xe5d1, 0x0011, 0xe352\n"
-        ".hword 0xf102, 0x379f, 0x0042, 0xea00\n"
-        ".hword 0xcc08, 0x0026, 0xcc08, 0x0026\n"
-        ".hword 0xcc1c, 0x0026, 0xcc1c, 0x0026\n"
-        ".hword 0xcc1c, 0x0026, 0xcb40, 0x0026\n"
-        ".hword 0xcb40, 0x0026, 0xcb40, 0x0026\n"
-        ".hword 0xcb4c, 0x0026, 0xcb4c, 0x0026\n"
-        ".hword 0xcb58, 0x0026, 0xcbd4, 0x0026\n"
-        ".hword 0xcc1c, 0x0026, 0xcc1c, 0x0026\n"
-        ".hword 0xcc1c, 0x0026, 0xcc1c, 0x0026\n"
-        ".hword 0xcc1c, 0x0026, 0x03b6, 0xe1d1\n"
-        ".hword 0x4070, 0xe8bd, 0xc027, 0xea00\n"
-        ".hword 0x03b6, 0xe1d1, 0x4070, 0xe8bd\n"
-        ".hword 0x961d, 0xea00, 0x0b3c, 0xe591\n"
-        ".hword 0x0000, 0xe350, 0x000e, 0x0a00\n"
-        ".hword 0x0001, 0xe350, 0x0018, 0x1a00\n"
-        ".hword 0x1000, 0xe3a0, 0x0039, 0xe3a0\n"
-        ".hword 0x50d2, 0xeb01, 0x5000, 0xe1a0\n"
-        ".hword 0xf000, 0xe320, 0x50c5, 0xeb01\n"
-        ".hword 0x4000, 0xe1a0, 0x0005, 0xe1a0\n"
-        ".hword 0x50ae, 0xeb01, 0x0004, 0xe350\n"
-        ".hword 0x0e15, 0x8284, 0x000c, 0x9a00\n"
-        ".hword 0x0018, 0xea00, 0x1000, 0xe3a0\n"
-        ".hword 0x0039, 0xe3a0, 0x50c5, 0xeb01\n"
-        ".hword 0x5000, 0xe1a0, 0xf000, 0xe320\n"
-        ".hword 0x50b8, 0xeb01, 0x4000, 0xe1a0\n"
-        ".hword 0x0005, 0xe1a0, 0x50a1, 0xeb01\n"
-        ".hword 0x0003, 0xe350, 0x00fd, 0x8284\n"
-        ".hword 0x000d, 0x8a00, 0x8070, 0xe8bd\n"
-        ".hword 0x1000, 0xe3a0, 0x0039, 0xe3a0\n"
-        ".hword 0x50b8, 0xeb01, 0x5000, 0xe1a0\n"
-        ".hword 0xf000, 0xe320, 0x50ab, 0xeb01\n"
-        ".hword 0x4000, 0xe1a0, 0x0005, 0xe1a0\n"
-        ".hword 0x5094, 0xeb01, 0x0005, 0xe350\n"
-        ".hword 0x0f69, 0x8284, 0xfff2, 0x9aff\n"
-        ".hword 0x0001, 0xe280, 0x0000, 0xe350\n"
-        ".hword 0xffef, 0x0aff, 0x4070, 0xe8bd\n"
-        ".hword 0x100c, 0xe59f, 0xc93b, 0xea00\n"
-        ".hword 0x4070, 0xe8bd, 0x0e0b, 0xeafd\n"
-        ".hword 0xdcf0, 0x0043, 0x32ff, 0x3232\n"
-    );
-};
+extern "C" u32 camp_func_0026cae4(u32 unused, const u8* state) {
+    (void)unused;
+    const u8 op = state[0x66Cu];
+    u32 res = 0u;
+    switch (op) {
+    case 2u:
+    case 3u:
+    case 4u:
+    case 12u:
+    case 13u:
+    case 14u:
+    case 15u:
+    case 16u:
+        return func_001b0454(0u, state);
+    case 5u:
+    case 6u:
+    case 7u:
+        return camp_func_0029cbec(*reinterpret_cast<const u16*>(state + 0x36u), state);
+    case 8u:
+    case 9u:
+        return shop_func_002923d0(*reinterpret_cast<const u16*>(state + 0x36u), state);
+    case 10u: {
+        const u32 sel = *reinterpret_cast<const u32*>(state + 0xB3Cu);
+        if (sel == 0u) {
+            const u32 tbl = Tbb_GetGlobalSubTable(0x39u, 0u);
+            const u32 base = Tbb_GetPayloadData(tbl);
+            const u32 rows = Tbb_GetRowCount(tbl);
+            if (rows <= 3u) {
+                return rows;
+            }
+            res = base + 0xFDu;
+        } else if (sel == 1u) {
+            const u32 tbl = Tbb_GetGlobalSubTable(0x39u, 0u);
+            const u32 base = Tbb_GetPayloadData(tbl);
+            const u32 rows = Tbb_GetRowCount(tbl);
+            if (rows <= 4u) {
+                return rows;
+            }
+            res = base + 0x151u;
+        } else {
+            return sel;
+        }
+        break;
+    }
+    case 11u: {
+        const u32 tbl = Tbb_GetGlobalSubTable(0x39u, 0u);
+        const u32 base = Tbb_GetPayloadData(tbl);
+        const u32 rows = Tbb_GetRowCount(tbl);
+        if (rows <= 5u) {
+            return rows;
+        }
+        res = base + 0x1A5u;
+        break;
+    }
+    default:
+        return 0u;
+    }
+
+    if (res == 0u) {
+        return 0u;
+    }
+    camp_func_0029f10c(reinterpret_cast<const char*>(res), 0x323232FFu);
+    return 0u;
+}
 
 // DECOMP_FUNC(0x00273760, 340)
 extern "C" __attribute__((naked)) void script_vm_func_00273760() {
