@@ -520,59 +520,61 @@ extern "C" __attribute__((minsize)) uint32_t battle_func_002b8d24(uint8_t* objec
     return reinterpret_cast<uint32_t>(object);
 }
 
+extern "C" void engine_func_002c3aa8(void* lock);
+extern "C" u32 engine_func_002c3a44(void* pool, u32 size, u32 align, u32 a3, u32 a4, u32 a5);
+extern "C" void engine_func_002c3a24(void* lock);
+extern "C" u32 AsdMemory_func_00144978(u32 addr);
+
 // DECOMP_FUNC(0x002b2690, 376)
-extern "C" __attribute__((naked)) void engine_func_002b2690() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x47f0, 0xe92d, 0xd008, 0xe24d\n"
-        ".hword 0x2001, 0xe1a0, 0x1003, 0xe1b0\n"
-        ".hword 0x3028, 0xe59d, 0x0000, 0x03a0\n"
-        ".hword 0x0051, 0x0a00, 0x2c01, 0xe242\n"
-        ".hword 0x0006, 0xe352, 0x7008, 0xe3a0\n"
-        ".hword 0x5000, 0xe3a0, 0xf102, 0x379f\n"
-        ".hword 0x000c, 0xea00, 0x26dc, 0x002b\n"
-        ".hword 0x26e4, 0x002b, 0x26f8, 0x002b\n"
-        ".hword 0x26ec, 0x002b, 0x26f4, 0x002b\n"
-        ".hword 0x26f4, 0x002b, 0x7004, 0xe3a0\n"
-        ".hword 0x0004, 0xea00, 0x7080, 0xe3a0\n"
-        ".hword 0x0002, 0xea00, 0x7040, 0xe3a0\n"
-        ".hword 0x0000, 0xea00, 0x7010, 0xe3a0\n"
-        ".hword 0x0000, 0xe353, 0x30f8, 0xe59f\n"
-        ".hword 0x7000, 0x0267, 0x0c01, 0xe350\n"
-        ".hword 0x2000, 0xe1a0, 0x0004, 0xe593\n"
-        ".hword 0x0006, 0x0a00, 0x0801, 0xe352\n"
-        ".hword 0x0018, 0x0a00, 0x0802, 0xe352\n"
-        ".hword 0x002a, 0x0a00, 0x0803, 0xe352\n"
-        ".hword 0x0030, 0x1a00, 0x002c, 0xea00\n"
-        ".hword 0xa000, 0xe3a0, 0x901c, 0xe280\n"
-        ".hword 0x4074, 0xe280, 0x8001, 0xe1a0\n"
-        ".hword 0x500a, 0xe1a0, 0x600a, 0xe1a0\n"
-        ".hword 0x0004, 0xe1a0, 0x44d5, 0xeb00\n"
-        ".hword 0x300a, 0xe1a0, 0x2007, 0xe1a0\n"
-        ".hword 0x1008, 0xe1a0, 0x0009, 0xe1a0\n"
-        ".hword 0x0060, 0xe88d, 0x44b6, 0xeb00\n"
-        ".hword 0x5000, 0xe1a0, 0x0004, 0xe1a0\n"
-        ".hword 0x44ab, 0xeb00, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0x001b, 0xea00\n"
-        ".hword 0xa000, 0xe3a0, 0x9088, 0xe280\n"
-        ".hword 0x40e0, 0xe280, 0x8001, 0xe1a0\n"
-        ".hword 0x500a, 0xe1a0, 0x600a, 0xe1a0\n"
-        ".hword 0x0004, 0xe1a0, 0x44c1, 0xeb00\n"
-        ".hword 0x300a, 0xe1a0, 0x2007, 0xe1a0\n"
-        ".hword 0x1008, 0xe1a0, 0x0009, 0xe1a0\n"
-        ".hword 0x0060, 0xe88d, 0x44a2, 0xeb00\n"
-        ".hword 0x5000, 0xe1a0, 0x0004, 0xe1a0\n"
-        ".hword 0x4497, 0xeb00, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0x0007, 0xea00\n"
-        ".hword 0x0028, 0xe59f, 0x4867, 0xebfa\n"
-        ".hword 0x5000, 0xe1a0, 0xf000, 0xe320\n"
-        ".hword 0x0002, 0xea00, 0x0018, 0xe59f\n"
-        ".hword 0x4862, 0xebfa, 0x5000, 0xe1a0\n"
-        ".hword 0x0005, 0xe1a0, 0xd008, 0xe28d\n"
-        ".hword 0x87f0, 0xe8bd, 0x5170, 0x0046\n"
-        ".hword 0x4100, 0x004e, 0x411c, 0x004e\n"
-    );
-};
+extern "C" u32 engine_func_002b2690(u32 heap_kind, u32 align_kind, u32 unused, u32 size, u32 positive_align) {
+    (void)unused;
+    if (size == 0u) {
+        return 0u;
+    }
+
+    u32 align = 8u;
+    switch (align_kind - 0x100u) {
+    case 0u:
+        align = 4u;
+        break;
+    case 1u:
+        align = 0x80u;
+        break;
+    case 3u:
+        align = 0x40u;
+        break;
+    case 4u:
+    case 5u:
+        align = 0x10u;
+        break;
+    default:
+        break;
+    }
+    if (positive_align == 0u) {
+        align = static_cast<u32>(-static_cast<s32>(align));
+    }
+
+    u8* const mgr = *reinterpret_cast<u8* const*>(0x00465170u + 4u);
+    if (heap_kind == 0x100u) {
+        engine_func_002c3aa8(mgr + 0x74u);
+        const u32 res = engine_func_002c3a44(mgr + 0x1Cu, size, align, 0u, 0u, 0u);
+        engine_func_002c3a24(mgr + 0x74u);
+        return res;
+    }
+    if (heap_kind == 0x10000u) {
+        engine_func_002c3aa8(mgr + 0xE0u);
+        const u32 res = engine_func_002c3a44(mgr + 0x88u, size, align, 0u, 0u, 0u);
+        engine_func_002c3a24(mgr + 0xE0u);
+        return res;
+    }
+    if (heap_kind == 0x20000u) {
+        return AsdMemory_func_00144978(0x004E4100u);
+    }
+    if (heap_kind == 0x30000u) {
+        return AsdMemory_func_00144978(0x004E411Cu);
+    }
+    return 0u;
+}
 
 // DECOMP_FUNC(0x0029af60, 384)
 extern "C" __attribute__((naked)) void script_vm_func_0029af60() {
