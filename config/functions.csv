@@ -241,7 +241,7 @@ address,size,status,category,name,src_file
 0x0010decc,32,matching,engine,engine_func_0010decc,src/engine/leaf_batch39_a.cpp
 0x0010deec,112,matching,engine,AsdGxCommandList_func_0010deec,src/engine/leaf_batch38_c.cpp
 0x0010df5c,56,matching,unknown,func_0010df5c,src/engine/leaf_batch35_c.cpp
-0x0010df94,1468,matching,unknown,func_0010df94,src/engine/leaf_batch45_c.cpp
+0x0010df94,1468,non_matching,unknown,func_0010df94,src/engine/leaf_batch45_c.cpp
 0x0010e550,16,matching,unknown,func_0010e550,src/engine/leaf_batch20_a.cpp
 0x0010e560,16,matching,unknown,func_0010e560,src/engine/leaf_batch20_a.cpp
 0x0010e570,16,matching,ui,ui_func_0010e570,src/engine/leaf_batch20_a.cpp
