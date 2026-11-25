@@ -1014,66 +1014,85 @@ extern "C" u32 engine_func_002fb7a0() {
     return 0u;
 }
 
+extern "C" void FrameTex_func_00280d30(u32 a0);
+extern "C" void btlStage_func_003c8280(u8* self);
+extern "C" u32 engine_func_00340790(u8* self, u16 id);
+extern "C" void battle_func_003406d8(u8* self, f32 x, f32 y, f32 z);
+extern "C" void battle_func_0034073c(u8* self, f32 x, f32 y, f32 z);
+extern "C" s32 ui_func_0025bd6c(u32 a0, u32 a1, u32 a2);
+extern "C" void PlaceWin_SetPos(s32 win, u32 a1, f32 x, f32 y, f32 z);
+extern "C" void battle_func_003c7f18(u8* self, u32 a1, u32 a2);
+extern "C" void script_vm_func_00275c2c();
+extern "C" void script_vm_func_0024f15c(u8* self);
+extern "C" void battle_func_00340588(u8* self);
+extern "C" void battle_func_00340674(u8* self);
+
 // DECOMP_FUNC(0x003c83f0, 428)
-extern "C" __attribute__((naked)) void battle_func_003c83f0() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4070, 0xe92d, 0x0000, 0xe351\n"
-        ".hword 0x4000, 0xe1a0, 0x8b02, 0xed2d\n"
-        ".hword 0x005c, 0x0a00, 0x0178, 0xe59f\n"
-        ".hword 0x0004, 0xe590, 0x0000, 0xe350\n"
-        ".hword 0x0059, 0x0a00, 0x0080, 0xe594\n"
-        ".hword 0x5168, 0xe59f, 0x8a5a, 0xed9f\n"
-        ".hword 0x0005, 0xe350, 0xf100, 0x379f\n"
-        ".hword 0x004d, 0xea00, 0x8564, 0x003c\n"
-        ".hword 0x8440, 0x003c, 0x8460, 0x003c\n"
-        ".hword 0x84f4, 0x003c, 0x8520, 0x003c\n"
-        ".hword 0x0000, 0xe3a0, 0xe239, 0xebfa\n"
-        ".hword 0x0004, 0xe1a0, 0xf000, 0xe320\n"
-        ".hword 0xff8a, 0xebff, 0x0002, 0xe3a0\n"
-        ".hword 0xf000, 0xe320, 0x0022, 0xea00\n"
-        ".hword 0x1bb4, 0xe1d4, 0x0004, 0xe1a0\n"
-        ".hword 0x0000, 0xe351, 0x003c, 0x0a00\n"
-        ".hword 0xe0c6, 0xebfd, 0x0000, 0xe350\n"
-        ".hword 0xf000, 0xe320, 0x0038, 0x0a00\n"
-        ".hword 0x0090, 0xe284, 0x0a03, 0xec90\n"
-        ".hword 0x0004, 0xe1a0, 0xe091, 0xebfd\n"
-        ".hword 0x0a48, 0xeeb0, 0x0000, 0xe595\n"
-        ".hword 0x0b01, 0xe280, 0x1a40, 0xeeb0\n"
-        ".hword 0x0a68, 0xedd0, 0x0004, 0xe1a0\n"
-        ".hword 0xe0a3, 0xebfd, 0x2000, 0xe3a0\n"
-        ".hword 0x10d8, 0xe59f, 0x0002, 0xe1a0\n"
-        ".hword 0x4e2b, 0xebfa, 0x0a34, 0xed9f\n"
-        ".hword 0x0000, 0xe350, 0x1000, 0xa3a0\n"
-        ".hword 0x0a40, 0xeef0, 0x1a40, 0xeeb0\n"
-        ".hword 0x08bc, 0xe1c4, 0x6ce0, 0xabfa\n"
-        ".hword 0x1008, 0xe284, 0x0004, 0xe1a0\n"
-        ".hword 0x0006, 0xe891, 0xfe8b, 0xebff\n"
-        ".hword 0x0004, 0xe3a0, 0x0080, 0xe584\n"
-        ".hword 0x001b, 0xea00, 0x00a0, 0xe594\n"
-        ".hword 0x5000, 0xe3a0, 0x0000, 0xe350\n"
-        ".hword 0x50a0, 0x1584, 0xb5c8, 0xebfa\n"
-        ".hword 0x0004, 0xe1a0, 0xf000, 0xe320\n"
-        ".hword 0x1b11, 0xebfa, 0x5080, 0xe584\n"
-        ".hword 0xf000, 0xe320, 0x0010, 0xea00\n"
-        ".hword 0x0090, 0xe284, 0x0a03, 0xec90\n"
-        ".hword 0x0004, 0xe1a0, 0xe069, 0xebfd\n"
-        ".hword 0x0a48, 0xeeb0, 0x0000, 0xe595\n"
-        ".hword 0x0b01, 0xe280, 0x1a40, 0xeeb0\n"
-        ".hword 0x0a68, 0xedd0, 0x0004, 0xe1a0\n"
-        ".hword 0xe07b, 0xebfd, 0x0004, 0xe1a0\n"
-        ".hword 0xf000, 0xe320, 0xe00b, 0xebfd\n"
-        ".hword 0x0004, 0xe1a0, 0xf000, 0xe320\n"
-        ".hword 0xe043, 0xebfd, 0x09bc, 0xe1d4\n"
-        ".hword 0x1028, 0xe59f, 0x0001, 0xe150\n"
-        ".hword 0x0001, 0x3280, 0x09bc, 0x31c4\n"
-        ".hword 0x0000, 0xe3a0, 0x8b02, 0xecbd\n"
-        ".hword 0x8070, 0xe8bd, 0x98d0, 0x0043\n"
-        ".hword 0x42c8, 0x0043, 0x0000, 0x0000\n"
-        ".hword 0x17f0, 0x0040, 0x0000, 0x3f00\n"
-        ".hword 0xffff, 0x0000\n"
-    );
-};
+extern "C" u32 battle_func_003c83f0(u8* self, u32 active) {
+    if (active == 0u || *reinterpret_cast<const u32*>(0x004398D0u + 4u) == 0u) {
+        return 0u;
+    }
+
+    u32* const state_ptr = reinterpret_cast<u32*>(self + 0x80u);
+    switch (*state_ptr) {
+    case 1u:
+        FrameTex_func_00280d30(0u);
+        btlStage_func_003c8280(self);
+        *state_ptr = 2u;
+        break;
+    case 2u: {
+        const u16 id = *reinterpret_cast<const u16*>(self + 0xB4u);
+        if (id != 0u && engine_func_00340790(self, id) != 0u) {
+            battle_func_003406d8(
+                self,
+                *reinterpret_cast<const f32*>(self + 0x90u),
+                *reinterpret_cast<const f32*>(self + 0x94u),
+                *reinterpret_cast<const f32*>(self + 0x98u));
+            const u8* const p = *reinterpret_cast<const u8* const*>(0x004342C8u);
+            battle_func_0034073c(self, 0.0f, *reinterpret_cast<const f32*>(p + 0x5A0u), 0.0f);
+            const s32 win = ui_func_0025bd6c(0u, 0x004017F0u, 0u);
+            *reinterpret_cast<s16*>(self + 0x8Cu) = static_cast<s16>(win);
+            if (win >= 0) {
+                PlaceWin_SetPos(win, 0u, 0.5f, 0.5f, 0.5f);
+            }
+            battle_func_003c7f18(
+                self,
+                *reinterpret_cast<const u32*>(self + 0x08u),
+                *reinterpret_cast<const u32*>(self + 0x0Cu));
+            *state_ptr = 4u;
+        }
+        break;
+    }
+    case 3u:
+        if (*reinterpret_cast<const u32*>(self + 0xA0u) != 0u) {
+            *reinterpret_cast<u32*>(self + 0xA0u) = 0u;
+        }
+        script_vm_func_00275c2c();
+        script_vm_func_0024f15c(self);
+        *state_ptr = 0u;
+        break;
+    case 4u: {
+        battle_func_003406d8(
+            self,
+            *reinterpret_cast<const f32*>(self + 0x90u),
+            *reinterpret_cast<const f32*>(self + 0x94u),
+            *reinterpret_cast<const f32*>(self + 0x98u));
+        const u8* const p = *reinterpret_cast<const u8* const*>(0x004342C8u);
+        battle_func_0034073c(self, 0.0f, *reinterpret_cast<const f32*>(p + 0x5A0u), 0.0f);
+        battle_func_00340588(self);
+        battle_func_00340674(self);
+        break;
+    }
+    default:
+        break;
+    }
+
+    u16* const cnt = reinterpret_cast<u16*>(self + 0x9Cu);
+    if (*cnt < 0xFFFFu) {
+        *cnt += 1u;
+    }
+    return 0u;
+}
 
 // DECOMP_FUNC(0x002ae874, 436)
 extern "C" __attribute__((naked)) void camp_func_002ae874() {
