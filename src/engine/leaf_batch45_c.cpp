@@ -9361,108 +9361,135 @@ extern "C" s32 ui_func_0033445c(u8* r0_arg, u8* ctx) {
 }
 
 // DECOMP_FUNC(0x003ea54c, 1552)
-// Capstone ARM full coverage (388 instructions); raw bytes only, no terminal-return claim.
-extern "C" __attribute__((naked)) void engine_func_003ea54c() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4ff7, 0xe24dd010, 0xe1a04000, 0xe5900014\n"
-        ".word 0xe594c010, 0xe5942008, 0xe594703c, 0xe150000c\n"
-        ".word 0x2040100c, 0x20825001, 0xe5941040, 0x30825000\n"
-        ".word 0xe5946034, 0xe1510007, 0x20413007, 0x20863203\n"
-        ".word 0x30863201, 0xe5933004, 0xe5933008, 0xe2433001\n"
-        ".word 0xe0833000, 0xe153000c, 0x2043300c, 0xe0833002\n"
-        ".word 0xe1550003, 0x9a000152, 0xe1510007, 0x20410007\n"
-        ".word 0xe284505c, 0x20860200, 0x30860201, 0xe595300c\n"
-        ".word 0xe5900004, 0xe5951004, 0xe3a0b000, 0xe5900008\n"
-        ".word 0xe1500003, 0x9a0000d4, 0xe0507003, 0xe0812003\n"
-        ".word 0x0a000122, 0xe5950008, 0xe0839007, 0xe0426001\n"
-        ".word 0xe1500009, 0x3a000061, 0xe0433006, 0xe1530007\n"
-        ".word 0xe1a00007, 0x31a00003, 0xe3500000, 0xe0438000\n"
-        ".word 0xe049c000, 0xe0423000, 0x1081100c, 0x0a000007\n"
-        ".word 0xe1a0c003, 0xe1b02001, 0x15dcc000, 0xe2821001\n"
-        ".word 0xe2833001, 0x15c2c000, 0xe2500001, 0x1afffff7\n"
-        ".word 0xe0861007, 0xe3580000, 0xe1a00006, 0xe1a02001\n"
-        ".word 0x0a00003c, 0xe1510000, 0x8a00001d, 0xe5953004\n"
-        ".word 0xe3780106, 0xe0831002, 0xe0830006, 0x9a000004\n"
-        ".word 0xe4d03001, 0xe2588001, 0xe4c13001, 0x1afffffb\n"
-        ".word 0xea000030, 0xe3580001, 0xd3a08001, 0xda000001\n"
-        ".word 0xe3580000, 0xda00002b, 0xe3180001, 0xe2400001\n"
-        ".word 0xe2411001, 0x0a000001, 0xe5f03001, 0xe5e13001\n"
-        ".word 0xe1b030c8, 0x0a000023, 0xe5d0c001, 0xe2533001\n"
-        ".word 0xe5c1c001, 0xe5f0c002, 0xe5e1c002, 0x1afffff9\n"
-        ".word 0xea00001c, 0xe5950004, 0xe0821008, 0xe0863008\n"
-        ".word 0xe0811000, 0xe3780106, 0xe0800003, 0x9a000004\n"
-        ".word 0xe5703001, 0xe2588001, 0xe5613001, 0x1afffffb\n"
-        ".word 0xea000010, 0xe3580001, 0xd3a08001, 0xda000001\n"
-        ".word 0xe3580000, 0xda00000b, 0xe3180001, 0x0a000001\n"
-        ".word 0xe5703001, 0xe5613001, 0xe1b030c8, 0x0a000005\n"
-        ".word 0xe550c001, 0xe2533001, 0xe541c001, 0xe570c002\n"
-        ".word 0xe561c002, 0x1afffff9, 0xe595000c, 0xe1520000\n"
-        ".word 0x31a00002, 0xe5952004, 0xe0821006, 0xe0800002\n"
-        ".word 0xe0400001, 0xe3500000, 0xda000060, 0xe1b000c0\n"
-        ".word 0x0a00005e, 0xe2500001, 0x1afffffd, 0xea00005b\n"
-        ".word 0xe1a01009, 0xebf90680, 0xe5958000, 0xe1b0a000\n"
-        ".word 0xe1a0100b, 0xe58db000, 0x0a000027, 0xe58da004\n"
-        ".word 0xe5980000, 0xe1a0100a, 0xe5902000, 0xe1a00008\n"
-        ".word 0xe12fff32, 0xe3500000, 0xe58d0008, 0x1a000005\n"
-        ".word 0xe5980000, 0xe59f1380, 0xe59d2004, 0xe5903008\n"
-        ".word 0xe1a00008, 0xe12fff33, 0xe59d1008, 0xe3510000\n"
-        ".word 0x158da000, 0x1a000014, 0xe159000a, 0x0a000047\n"
-        ".word 0xe3590000, 0x0a000010, 0xe58d9000, 0xe5980000\n"
-        ".word 0xe1a01009, 0xe5902000, 0xe1a00008, 0xe12fff32\n"
-        ".word 0xe1b0a000, 0x1a000005, 0xe5980000, 0xe59f1328\n"
-        ".word 0xe59d2000, 0xe5903008, 0xe1a00008, 0xe12fff33\n"
-        ".word 0xe1b0100a, 0x158d9000, 0x0a000034, 0xe5952004\n"
-        ".word 0xe1b0c006, 0x11a00001, 0x0a000007, 0xe1a0a002\n"
-        ".word 0xe1b03000, 0x15daa000, 0xe2830001, 0xe2822001\n"
-        ".word 0x15c3a000, 0xe25cc001, 0x1afffff7, 0xe595300c\n"
-        ".word 0xe5952004, 0xe0860007, 0xe053c006, 0xe0822006\n"
-        ".word 0x10800001, 0x0a000007, 0xe1a0a002, 0xe1b03000\n"
-        ".word 0x15daa000, 0xe2830001, 0xe2822001, 0x15c3a000\n"
-        ".word 0xe25cc001, 0x1afffff7, 0xe5952004, 0xe5851004\n"
-        ".word 0xe59d0000, 0xe5850008, 0xe595000c, 0xe0800002\n"
-        ".word 0xe0400002, 0xe3500000, 0xda000003, 0xe1b000c0\n"
-        ".word 0x0a000001, 0xe2500001, 0x1afffffd, 0xe1a01002\n"
-        ".word 0xe5982000, 0xe1a00008, 0xe5922004, 0xe12fff32\n"
-        ".word 0xe585900c, 0xe5950004, 0xe0900006, 0xe2866001\n"
-        ".word 0x15c0b000, 0xe2577001, 0x1afffff9, 0xea000057\n"
-        ".word 0xe5982000, 0xe1a00008, 0xe5922004, 0xe12fff32\n"
-        ".word 0xe28dd01c, 0xe3a00000, 0xe8bd8ff0, 0xe0812003\n"
-        ".word 0xe0800001, 0xe1500002, 0x0a00004c, 0xe042c000\n"
-        ".word 0xe0426001, 0xe0402001, 0xe0530006, 0xe043c00c\n"
-        ".word 0x0a00003a, 0xe1520006, 0x8a00001c, 0xe0822001\n"
-        ".word 0xe3700106, 0xe0811006, 0x9a000004, 0xe4d13001\n"
-        ".word 0xe2500001, 0xe4c23001, 0x1afffffb, 0xea00002f\n"
-        ".word 0xe3500001, 0xd3a00001, 0xda000001, 0xe3500000\n"
-        ".word 0xda00002a, 0xe3100001, 0xe2411001, 0xe2422001\n"
-        ".word 0x0a000001, 0xe5f13001, 0xe5e23001, 0xe1b000c0\n"
-        ".word 0x0a000022, 0xe5d13001, 0xe2500001, 0xe5c23001\n"
-        ".word 0xe5f13002, 0xe5e23002, 0x1afffff9, 0xea00001b\n"
-        ".word 0xe0822000, 0xe0863000, 0xe0822001, 0xe3700106\n"
-        ".word 0xe0811003, 0x9a000004, 0xe5713001, 0xe2500001\n"
-        ".word 0xe5623001, 0x1afffffb, 0xea000010, 0xe3500001\n"
-        ".word 0xd3a00001, 0xda000001, 0xe3500000, 0xda00000b\n"
-        ".word 0xe3100001, 0x0a000001, 0xe5713001, 0xe5623001\n"
-        ".word 0xe1b000c0, 0x0a000005, 0xe5513001, 0xe2500001\n"
-        ".word 0xe5423001, 0xe5713002, 0xe5623002, 0x1afffff9\n"
-        ".word 0xe5952004, 0xe595100c, 0xe082000c, 0xe0811002\n"
-        ".word 0xe0410000, 0xe3500000, 0xda000003, 0xe1b000c0\n"
-        ".word 0x0a000001, 0xe2500001, 0x1afffffd, 0xe585c00c\n"
-        ".word 0xe5940014, 0xe5941010, 0xe1500001, 0xe0415000\n"
-        ".word 0x20400001, 0xe5941008, 0xe1a02005, 0xe0811000\n"
-        ".word 0xe5940060, 0xebfb6d53, 0xe5940040, 0xe594103c\n"
-        ".word 0xe1500001, 0x20400001, 0xe5941034, 0xe0810200\n"
-        ".word 0xe5941010, 0xe5900004, 0xe5900008, 0xe0402005\n"
-        ".word 0xe5940014, 0xe0800005, 0xe1500001, 0x20400001\n"
-        ".word 0xe5941008, 0xe0811000, 0xe5940060, 0xe0800005\n"
-        ".word 0xebfb6d40, 0xe59d1014, 0xe5940060, 0xe5810000\n"
-        ".word 0xea000004, 0xe59d1014, 0xe150000c, 0x2040000c\n"
-        ".word 0xe0800002, 0xe5810000, 0xe5940040, 0xe594103c\n"
-        ".word 0xe1500001, 0x20400001, 0xe5941034, 0xe0810200\n"
-        ".word 0xe5900004, 0xe5901008, 0xe59d0018, 0xe5801000\n"
-        ".word 0xe594006c, 0xe1510000, 0x81a00001, 0xe584006c\n"
-        ".word 0xe28dd01c, 0xe3a00001, 0xe8bd8ff0, 0x0040ff98\n"
-    );
+// Semantic C++ reconstruction (differential-tested in tools/test_leaf_003ea54c.py).
+// Reads the next queued ring-buffer message from self into *out_ptr / *out_len:
+// returns the contiguous ring slice when it does not wrap, or resizes the scratch
+// vector at self+0x5C and copies both wrapped halves into it; updates max_len at
+// self+0x6C and returns 1 (or 0 on scratch allocation failure).
+extern "C" s32 engine_func_003ea54c(u8* self, u8** out_ptr, u32* out_len) {
+    struct AllocVtable {
+        void* (*alloc)(void* self_alloc, u32 size);
+        void (*free)(void* self_alloc, void* ptr);
+        void (*on_oom)(void* self_alloc, const char* tag, u32 size);
+    };
+    struct ByteVec {
+        AllocVtable** allocator;
+        u8* data;
+        u32 cap;
+        u32 size;
+    };
+
+    u8* buf = *reinterpret_cast<u8**>(self + 0x08);
+    u32 cap = *reinterpret_cast<u32*>(self + 0x10);
+    u32 read_pos = *reinterpret_cast<u32*>(self + 0x14);
+    u8* q_arr = *reinterpret_cast<u8**>(self + 0x34);
+    u32 q_cap = *reinterpret_cast<u32*>(self + 0x3C);
+    u32 q_idx = *reinterpret_cast<u32*>(self + 0x40);
+
+    u32 wrapped_q_idx = (q_idx >= q_cap) ? (q_idx - q_cap) : q_idx;
+    u8* desc = q_arr + wrapped_q_idx * 16u;
+    u32 msg_len = *reinterpret_cast<u32*>(*reinterpret_cast<u8**>(desc + 4) + 8);
+
+    u32 start_off = (read_pos >= cap) ? (read_pos - cap) : read_pos;
+    u32 end_pos = msg_len - 1u + read_pos;
+    u32 end_off = (end_pos >= cap) ? (end_pos - cap) : end_pos;
+
+    if (buf + start_off <= buf + end_off) {
+        *out_ptr = buf + start_off;
+        *out_len = msg_len;
+        u32* max_len = reinterpret_cast<u32*>(self + 0x6C);
+        if (msg_len > *max_len) {
+            *max_len = msg_len;
+        }
+        return 1;
+    }
+
+    ByteVec* vec = reinterpret_cast<ByteVec*>(self + 0x5C);
+    u32 old_size = vec->size;
+    if (msg_len > old_size) {
+        u32 growth = msg_len - old_size;
+        if (msg_len <= vec->cap) {
+            for (u32 i = 0; i < growth; ++i) {
+                vec->data[old_size + i] = 0;
+            }
+            vec->size = msg_len;
+        } else {
+            u32 new_cap = func_0022c198(reinterpret_cast<u8*>(vec), msg_len);
+            AllocVtable** alloc = vec->allocator;
+            u8* new_buf = nullptr;
+            u32 cap_used = new_cap;
+
+            if (new_cap != 0) {
+                new_buf = static_cast<u8*>((*alloc)->alloc(alloc, new_cap));
+                if (!new_buf) {
+                    (*alloc)->on_oom(alloc, reinterpret_cast<const char*>(0x0040FF98), new_cap);
+                }
+            }
+            if (!new_buf) {
+                if (msg_len == new_cap || msg_len == 0) {
+                    (*alloc)->free(alloc, nullptr);
+                    return 0;
+                }
+                cap_used = msg_len;
+                new_buf = static_cast<u8*>((*alloc)->alloc(alloc, msg_len));
+                if (!new_buf) {
+                    (*alloc)->on_oom(alloc, reinterpret_cast<const char*>(0x0040FF98), msg_len);
+                    (*alloc)->free(alloc, nullptr);
+                    return 0;
+                }
+            }
+
+            u8* old_data = vec->data;
+            for (u32 i = 0; i < old_size; ++i) {
+                new_buf[i] = old_data[i];
+            }
+            vec->data = new_buf;
+            vec->cap = cap_used;
+            (*alloc)->free(alloc, old_data);
+            vec->size = msg_len;
+            for (u32 i = 0; i < growth; ++i) {
+                new_buf[old_size + i] = 0;
+            }
+        }
+    } else if (msg_len < old_size) {
+        vec->size = msg_len;
+    }
+
+    cap = *reinterpret_cast<u32*>(self + 0x10);
+    read_pos = *reinterpret_cast<u32*>(self + 0x14);
+    buf = *reinterpret_cast<u8**>(self + 0x08);
+    u32 first_len = cap - read_pos;
+    u32 off1 = (read_pos >= cap) ? (read_pos - cap) : read_pos;
+    engine_func_002c5ff4(vec->data, buf + off1, first_len);
+
+    q_idx = *reinterpret_cast<u32*>(self + 0x40);
+    q_cap = *reinterpret_cast<u32*>(self + 0x3C);
+    q_arr = *reinterpret_cast<u8**>(self + 0x34);
+    wrapped_q_idx = (q_idx >= q_cap) ? (q_idx - q_cap) : q_idx;
+    desc = q_arr + wrapped_q_idx * 16u;
+    msg_len = *reinterpret_cast<u32*>(*reinterpret_cast<u8**>(desc + 4) + 8);
+
+    read_pos = *reinterpret_cast<u32*>(self + 0x14);
+    cap = *reinterpret_cast<u32*>(self + 0x10);
+    buf = *reinterpret_cast<u8**>(self + 0x08);
+    u32 pos2 = read_pos + first_len;
+    u32 off2 = (pos2 >= cap) ? (pos2 - cap) : pos2;
+    engine_func_002c5ff4(vec->data + first_len, buf + off2, msg_len - first_len);
+
+    *out_ptr = vec->data;
+    q_idx = *reinterpret_cast<u32*>(self + 0x40);
+    q_cap = *reinterpret_cast<u32*>(self + 0x3C);
+    q_arr = *reinterpret_cast<u8**>(self + 0x34);
+    wrapped_q_idx = (q_idx >= q_cap) ? (q_idx - q_cap) : q_idx;
+    desc = q_arr + wrapped_q_idx * 16u;
+    msg_len = *reinterpret_cast<u32*>(*reinterpret_cast<u8**>(desc + 4) + 8);
+    *out_len = msg_len;
+
+    u32* max_len = reinterpret_cast<u32*>(self + 0x6C);
+    if (msg_len > *max_len) {
+        *max_len = msg_len;
+    }
+    return 1;
 }
 
 // DECOMP_FUNC(0x003f2bb4, 1572)

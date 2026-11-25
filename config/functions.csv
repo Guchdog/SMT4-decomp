@@ -10375,7 +10375,7 @@ address,size,status,category,name,src_file
 0x003ea4d0,40,matching,unknown,func_003ea4d0,src/engine/leaf_batch19_a.cpp
 0x003ea4f8,56,non_matching,camp,camp_func_003ea4f8,src/engine/leaf_batch31_b.cpp
 0x003ea530,28,matching,camp,camp_func_003ea530,src/engine/leaf_batch37_b.cpp
-0x003ea54c,1552,matching,engine,engine_func_003ea54c,src/engine/leaf_batch45_c.cpp
+0x003ea54c,1552,non_matching,engine,engine_func_003ea54c,src/engine/leaf_batch45_c.cpp
 0x003eab5c,36,matching,unknown,func_003eab5c,src/engine/leaf_batch10_b.cpp
 0x003eab80,92,matching,unknown,func_003eab80,src/engine/leaf_batch13_c.cpp
 0x003eabdc,156,matching,unknown,func_003eabdc,src/engine/leaf_batch14_b.cpp
