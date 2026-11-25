@@ -653,62 +653,46 @@ extern "C" s32 script_vm_func_002dcaf8(const u16* a, const u16* b) {
            static_cast<s32>(*reinterpret_cast<const u16*>(pa2 + 4u));
 }
 
+extern "C" void* engine_func_002c4b84(u32 a0, u32 a1, u32 a2, u32 a3, u32 a4);
+extern "C" u32 engine_func_002c5978(const char* name, u32 a1, u32 a2, u32 a3,
+                                    void (*fn0)(), void (*fn1)(), void* buf);
+extern "C" void engine_func_0010be80(u32 proc, void (*fn)());
+extern "C" u32 AsdMdlManager_func_0010dbc0(u32 a0);
+extern "C" void engine_func_002c4360(void* buf);
+extern "C" void battle_func_0010a150();
+extern "C" void func_0010aed4();
+extern "C" void func_0010b7e4();
+extern "C" void func_0010d224();
+extern "C" void func_0010b7d4();
+
 // DECOMP_FUNC(0x00103ff8, 396)
-extern "C" __attribute__((naked)) void AsdModelProcess_func_00103ff8() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x43f0, 0xe92d, 0x5000, 0xe1a0\n"
-        ".hword 0x7001, 0xe1a0, 0xd00c, 0xe24d\n"
-        ".hword 0x6002, 0xe1a0, 0x1090, 0xe3a0\n"
-        ".hword 0x00dc, 0xe28f, 0x0000, 0xe1a0\n"
-        ".hword 0x0001, 0xe3a0, 0x1c01, 0xe3a0\n"
-        ".hword 0x0000, 0xe58d, 0x300c, 0xe3a0\n"
-        ".hword 0x2000, 0xe3a0, 0x0001, 0xe1a0\n"
-        ".hword 0x02d3, 0xeb07, 0x4000, 0xe1b0\n"
-        ".hword 0x0026, 0x0a00, 0x10f0, 0xe59f\n"
-        ".hword 0x00e8, 0xe59f, 0x8004, 0xe28d\n"
-        ".hword 0x1000, 0xe58d, 0x3000, 0xe3a0\n"
-        ".hword 0x0011, 0xe888, 0x2003, 0xe1a0\n"
-        ".hword 0x1005, 0xe1a0, 0x00d4, 0xe28f\n"
-        ".hword 0x0644, 0xeb07, 0x80e0, 0xe59f\n"
-        ".hword 0x0000, 0xe350, 0x0000, 0xe588\n"
-        ".hword 0x001a, 0x0a00, 0x00d4, 0xe59f\n"
-        ".hword 0x9000, 0xe3a0, 0x4008, 0xe58d\n"
-        ".hword 0x0201, 0xe88d, 0x3009, 0xe1a0\n"
-        ".hword 0x2009, 0xe1a0, 0x1007, 0xe1a0\n"
-        ".hword 0x00bc, 0xe28f, 0x0637, 0xeb07\n"
-        ".hword 0x10c8, 0xe59f, 0x0000, 0xe584\n"
-        ".hword 0x1f76, 0xeb00, 0x00c0, 0xe59f\n"
-        ".hword 0x4008, 0xe58d, 0x3000, 0xe3a0\n"
-        ".hword 0x0201, 0xe88d, 0x2003, 0xe1a0\n"
-        ".hword 0x1006, 0xe1a0, 0x00ac, 0xe28f\n"
-        ".hword 0x062c, 0xeb07, 0x0008, 0xe584\n"
-        ".hword 0x0005, 0xe1a0, 0x26bb, 0xeb00\n"
-        ".hword 0x0000, 0xe350, 0x0000, 0x1598\n"
-        ".hword 0xd00c, 0xe28d, 0x83f0, 0xe8bd\n"
-        ".hword 0x0004, 0xe1a0, 0x009d, 0xeb07\n"
-        ".hword 0xd00c, 0xe28d, 0x0000, 0xe3a0\n"
-        ".hword 0x83f0, 0xe8bd, 0x3a63, 0x535c\n"
-        ".hword 0x544d, 0x5c34, 0x5258, 0x3644\n"
-        ".hword 0x3638, 0x415c, 0x6473, 0x4453\n"
-        ".hword 0x5c4b, 0x6f53, 0x7275, 0x6563\n"
-        ".hword 0x475c, 0x7866, 0x4d5c, 0x646f\n"
-        ".hword 0x6c65, 0x415c, 0x6473, 0x6f4d\n"
-        ".hword 0x6564, 0x506c, 0x6f72, 0x6563\n"
-        ".hword 0x7373, 0x632e, 0x7070, 0x0000\n"
-        ".hword 0xa150, 0x0010, 0xaed4, 0x0010\n"
-        ".hword 0x7341, 0x4d64, 0x646f, 0x6c65\n"
-        ".hword 0x6143, 0x636c, 0x7250, 0x636f\n"
-        ".hword 0x0000, 0x0000, 0x4be8, 0x0046\n"
-        ".hword 0xb7e4, 0x0010, 0x7341, 0x4d64\n"
-        ".hword 0x646f, 0x6c65, 0x7244, 0x7761\n"
-        ".hword 0x7055, 0x7250, 0x636f, 0x0000\n"
-        ".hword 0xd224, 0x0010, 0xb7d4, 0x0010\n"
-        ".hword 0x7341, 0x4d64, 0x646f, 0x6c65\n"
-        ".hword 0x7244, 0x7761, 0x7744, 0x7250\n"
-        ".hword 0x636f, 0x0000\n"
-    );
-};
+extern "C" u32 AsdModelProcess_func_00103ff8(u32 a0, u32 a1, u32 a2) {
+    u32* const buf = static_cast<u32*>(engine_func_002c4b84(0x100u, 0x100u, 0u, 0xCu, 1u));
+    if (buf == nullptr) {
+        return 0u;
+    }
+
+    const u32 calc_proc = engine_func_002c5978(
+        "AsdModelCalcProc", a0, 0u, 0u, &func_0010aed4, &battle_func_0010a150, buf);
+    *reinterpret_cast<u32*>(0x00464BE8u) = calc_proc;
+    if (calc_proc == 0u) {
+        engine_func_002c4360(buf);
+        return 0u;
+    }
+
+    const u32 up_proc = engine_func_002c5978(
+        "AsdModelDrawUpProc", a1, 0u, 0u, &func_0010b7e4, nullptr, buf);
+    buf[0] = up_proc;
+    engine_func_0010be80(up_proc, &func_0010d224);
+
+    buf[2] = engine_func_002c5978(
+        "AsdModelDrawDwProc", a2, 0u, 0u, &func_0010b7d4, nullptr, buf);
+
+    if (AsdMdlManager_func_0010dbc0(a0) != 0u) {
+        return *reinterpret_cast<const u32*>(0x00464BE8u);
+    }
+    return 0u;
+}
 
 // DECOMP_FUNC(0x00233600, 396)
 extern "C" __attribute__((naked)) void unite_func_00233600() {
