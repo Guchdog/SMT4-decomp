@@ -9719,113 +9719,179 @@ extern "C" void battle_func_003c35f0(u8* self, u8* mgr) {
     }
 }
 
+extern "C" void func_002aa938(u32 a0, u32 a1);
+
 // DECOMP_FUNC(0x00143b98, 1604)
-// Capstone ARM full coverage (401 instructions); raw bytes only, no terminal-return claim.
-extern "C" __attribute__((naked)) void func_00143b98() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d47f0, 0xe1a05000, 0xe3510000, 0xe59f03c0\n"
-        ".word 0xe59fe3b8, 0xe5900000, 0x0a000001, 0xe1a0000e\n"
-        ".word 0xe8bd87f0, 0xe2804e77, 0xe2806058, 0xe3a03001\n"
-        ".word 0xe2852034, 0xe083c203, 0xe085010c, 0xe5b0c034\n"
-        ".word 0xe35c0000, 0x0a00001e, 0xe5927034, 0xe5908034\n"
-        ".word 0xe1570008, 0x1a00001a, 0xe5907020, 0xe5928020\n"
-        ".word 0xe1580007, 0x1a000016, 0xe592800c, 0xe590900c\n"
-        ".word 0xe1580009, 0x1a000012, 0xe5928010, 0xe5909010\n"
-        ".word 0xe1580009, 0x1a00000e, 0xe5928014, 0xe5900014\n"
-        ".word 0xe1580000, 0x1a00000a, 0xe5920000, 0xe087700c\n"
-        ".word 0xe2477001, 0xe1a07cc7, 0xe1570cc0, 0x1a000004\n"
-        ".word 0xe150000c, 0x8a000002, 0xe2833001, 0xe3530006\n"
-        ".word 0xbaffffdb, 0xe0811006, 0xe3530006, 0xe5d110af\n"
-        ".word 0x11a0000e, 0x03a00000, 0xe3510000, 0x0a000001\n"
-        ".word 0xe3500000, 0x0a000003, 0xe5941000, 0xe3c11001\n"
-        ".word 0xe5841000, 0xe8bd87f0, 0xe2850020, 0xed9f0ab5\n"
-        ".word 0xedd51a07, 0xed952a06, 0xe594100c, 0xee611a80\n"
-        ".word 0xecd00a02, 0xee222a00, 0xe1a00002, 0xe3c11611\n"
-        ".word 0xee602a80, 0xee213a00, 0xe584100c, 0xe3e0c33e\n"
-        ".word 0xe59f32a4, 0xeefc0ae1, 0xeebc0ac2, 0xeebc1ae2\n"
-        ".word 0xeefc1ac3, 0xee108a90, 0xee107a10, 0xee116a10\n"
-        ".word 0xee112a90, 0xe1878408, 0xe1a07004, 0xe1886806\n"
-        ".word 0xe1862c02, 0xe5842004, 0xe5942008, 0xe590600c\n"
-        ".word 0xe3c22407, 0xe3c228ff, 0xe00cc806, 0xe182200c\n"
-        ".word 0xe5842008, 0xe590c010, 0xe1a025a2, 0xe1a02582\n"
-        ".word 0xe1a0ca8c, 0xe1a0caac, 0xe18cc002, 0xe584c008\n"
-        ".word 0xe594202c, 0xe202c4ff, 0xe584c02c, 0xe5942038\n"
-        ".word 0xe590c01c, 0xe3c2200f, 0xe20cc00f, 0xe18cc002\n"
-        ".word 0xe584c038, 0xe5902014, 0xe1520003, 0xe0423003\n"
-        ".word 0x0a00000f, 0xaa000007, 0xe2422c19, 0xe2522006\n"
-        ".word 0x13520001, 0x0a00000a, 0xe3520002, 0x13520003\n"
-        ".word 0x0a000007, 0xeaffff88, 0xe2432c47, 0xe2522036\n"
-        ".word 0x0a0000c1, 0xe2422c07, 0xe252201a, 0x13520001\n"
-        ".word 0x1affff81, 0xe3c11207, 0xe3811201, 0xe584100c\n"
-        ".word 0xe5952008, 0xe2422c29, 0xe2522001, 0x03c11a07\n"
-        ".word 0x03812a02, 0x0a00000c, 0xe2422b16, 0xe252202c\n"
-        ".word 0x03c11a07, 0x03812a01, 0x0a000007, 0xe3520002\n"
-        ".word 0x03c12a07, 0x0a000004, 0xe2422c02, 0xe2522043\n"
-        ".word 0x03c11a07, 0x03812a03, 0x1a000000, 0xe584200c\n"
-        ".word 0xe595100c, 0xe2411c29, 0xe2511001, 0x0a00000a\n"
-        ".word 0xe2411b16, 0xe251102c, 0x0a00000b, 0xe3510002\n"
-        ".word 0x0594100c, 0x03c12c07, 0x0a00000e, 0xe2411c02\n"
-        ".word 0xe2511043, 0x1a00000c, 0xea000007, 0xe594100c\n"
-        ".word 0xe3c11c07, 0xe3812c02, 0xea000006, 0xe594100c\n"
-        ".word 0xe3c11c07, 0xe3812c01, 0xea000002, 0xe594100c\n"
-        ".word 0xe3c11c07, 0xe3812c03, 0xe584200c, 0xe5951000\n"
-        ".word 0xe3510c26, 0x0594100c, 0x03c12002, 0x0a000004\n"
-        ".word 0xe2411c26, 0xe2511001, 0x0594100c, 0x03812002\n"
-        ".word 0x1a000000, 0xe584200c, 0xe5953004, 0xe59fc0cc\n"
-        ".word 0xe3a0180f, 0xe3a0240f, 0xe153000c, 0xe043c00c\n"
-        ".word 0x0a000059, 0xca000007, 0xe3530c26, 0x0a00000a\n"
-        ".word 0xe2433c26, 0xe2533001, 0x0a00003d, 0xe35300ff\n"
-        ".word 0x1a000043, 0xea00000d, 0xe35c0001, 0x0a000024\n"
-        ".word 0xe35c0002, 0x1a00003e, 0xea00005b, 0xe5942010\n"
-        ".word 0xe594300c, 0xe3c2240f, 0xe3c33401, 0xe3c2280f\n"
-        ".word 0xe3c33004, 0xe5842010, 0xe584300c, 0xea000034\n"
-        ".word 0xe594300c, 0xe3c33004, 0xe584300c, 0xe590e034\n"
-        ".word 0xe594c010, 0xe24ee001, 0xe3ccc80f, 0xe001180e\n"
-        ".word 0xe181100c, 0xe3c1c40f, 0xe5841010, 0xe5951014\n"
-        ".word 0xe3510000, 0xba000042, 0xe0021c01, 0xe18c2001\n"
-        ".word 0xe3c33401, 0xe5842010, 0xe584300c, 0xea000020\n"
-        ".word 0x00000502, 0x004655c0, 0x437f0000, 0x0000190a\n"
-        ".word 0x00002701, 0xe594300c, 0xe3c33004, 0xe584300c\n"
-        ".word 0xe590e034, 0xe594c010, 0xe24ee001, 0xe3ccc80f\n"
-        ".word 0xe001180e, 0xe181100c, 0xe3c1c40f, 0xe5841010\n"
-        ".word 0xe5951014, 0xe3510000, 0xba000039, 0xe0021c01\n"
-        ".word 0xe18c2001, 0xe3833401, 0xe5842010, 0xe584300c\n"
-        ".word 0xea000007, 0xe5942010, 0xe594300c, 0xe3c2240f\n"
-        ".word 0xe3c31401, 0xe3c2280f, 0xe3813004, 0xe5842010\n"
-        ".word 0xe584300c, 0xe5941010, 0xe1a036a1, 0xe1a03683\n"
-        ".word 0xe5843010, 0xe5900014, 0xe594100c, 0xe2402c67\n"
-        ".word 0xe252205a, 0x03a00002, 0x13a00000, 0xe3c11030\n"
-        ".word 0xe1811200, 0xe584100c, 0xea00002b, 0xe594300c\n"
-        ".word 0xe3833004, 0xe584300c, 0xe590e034, 0xe594c010\n"
-        ".word 0xe24ee001, 0xe3ccc80f, 0xe001180e, 0xe181100c\n"
-        ".word 0xe3c1c40f, 0xe5841010, 0xe5951014, 0xe3510000\n"
-        ".word 0xaaffffbc, 0xe3a01000, 0xeaffffba, 0xe594300c\n"
-        ".word 0xe3833004, 0xe584300c, 0xe590e034, 0xe594c010\n"
-        ".word 0xe24ee001, 0xe3ccc80f, 0xe001180e, 0xe181100c\n"
-        ".word 0xe3c1c40f, 0xe5841010, 0xe5951014, 0xe3510000\n"
-        ".word 0xaaffffc5, 0xe3a01000, 0xeaffffc3, 0xe5942010\n"
-        ".word 0xe3c11207, 0xe3c11c77, 0xe3c2040f, 0xe3c0080f\n"
-        ".word 0xe3c11030, 0xe1a026a0, 0xe3811119, 0xe284000c\n"
-        ".word 0xe1a02682, 0xe3811601, 0xe8800006, 0xe5950034\n"
-        ".word 0xeb000e2d, 0xe5941014, 0xe2011103, 0xe18111a0\n"
-        ".word 0xe5841014, 0xe5950078, 0xeb000e27, 0xe5941018\n"
-        ".word 0xe3e0657f, 0xe00601a0, 0xe0011b06, 0xe1811000\n"
-        ".word 0xe5841018, 0xe59500bc, 0xeb000e1f, 0xe594101c\n"
-        ".word 0xe00601a0, 0xe0011b06, 0xe1811000, 0xe584101c\n"
-        ".word 0xe5950100, 0xeb000e18, 0xe5941020, 0xe00601a0\n"
-        ".word 0xe0011b06, 0xe1811000, 0xe5841020, 0xe5950144\n"
-        ".word 0xeb000e11, 0xe1a01000, 0xe5940024, 0xe0002b06\n"
-        ".word 0xe00601a1, 0xe1821000, 0xe5841024, 0xe5950188\n"
-        ".word 0xeb000e09, 0xe5941028, 0xe00601a0, 0xe2842004\n"
-        ".word 0xe0011b06, 0xe1811000, 0xe5841028, 0xe5940000\n"
-        ".word 0xe3801001, 0xe5841000, 0xe3a0100a, 0xe3a00081\n"
-        ".word 0xeb0599e6, 0xe59f202c, 0xe59f002c, 0xe5921000\n"
-        ".word 0xe5900000, 0xe1510000, 0x2a000004, 0xe5943038\n"
-        ".word 0xe59fc018, 0xe281e008, 0xe8811008, 0xe582e000\n"
-        ".word 0xe3a00000, 0xe8bd87f0, 0x004652a0, 0x004652a4\n"
-        ".word 0x000f008e\n"
-    );
+// Semantic C++ reconstruction (differential-tested in tools/test_leaf_00143b98.py).
+// Configures GPU combiner/blend/alpha-test state in global+0x770 from the 6-stage
+// descriptor cfg (checking stage compatibility and global[0x107]), translates
+// combiner/blend enums into packed state words, updates stage address registers
+// via func_00147994, calls func_002aa938(0x81, 0x0A), and emits command 0x000F008E.
+extern "C" u32 func_00143b98(const u8* cfg, u32 idx) {
+    u8* g = *reinterpret_cast<u8**>(0x004655C0u);
+    if (idx != 0u) {
+        return 0x0502u;
+    }
+
+    u8* state = g + 0x770u;
+    const u8* s0 = cfg + 0x34u;
+    u32 i = 1u;
+    for (; i < 6u; ++i) {
+        const u8* si = cfg + 0x34u + i * 0x44u;
+        u32 si_0 = *reinterpret_cast<const u32*>(si + 0x00u);
+        if (si_0 == 0u) {
+            break;
+        }
+        if (*reinterpret_cast<const u32*>(s0 + 0x34u) != *reinterpret_cast<const u32*>(si + 0x34u) ||
+            *reinterpret_cast<const u32*>(s0 + 0x20u) != *reinterpret_cast<const u32*>(si + 0x20u) ||
+            *reinterpret_cast<const u32*>(s0 + 0x0Cu) != *reinterpret_cast<const u32*>(si + 0x0Cu) ||
+            *reinterpret_cast<const u32*>(s0 + 0x10u) != *reinterpret_cast<const u32*>(si + 0x10u) ||
+            *reinterpret_cast<const u32*>(s0 + 0x14u) != *reinterpret_cast<const u32*>(si + 0x14u)) {
+            break;
+        }
+        s32 s0_0 = *reinterpret_cast<const s32*>(s0 + 0x00u);
+        s32 si_20 = *reinterpret_cast<const s32*>(si + 0x20u);
+        if ((static_cast<s32>(si_0 + static_cast<u32>(si_20) - 1u) >> 25) != (s0_0 >> 25)) {
+            break;
+        }
+        if (static_cast<u32>(s0_0) > si_0) {
+            break;
+        }
+    }
+
+    if (g[0x107u] == 0u || i != 6u) {
+        *reinterpret_cast<u32*>(state) &= ~1u;
+        return (i != 6u) ? 0x0502u : 0u;
+    }
+
+    u32 sc = *reinterpret_cast<u32*>(state + 0x0Cu) & ~0x01100000u;
+    *reinterpret_cast<u32*>(state + 0x0Cu) = sc;
+
+    u32 c_r = static_cast<u32>(*reinterpret_cast<const float*>(cfg + 0x18u) * 255.0f);
+    u32 c_g = static_cast<u32>(*reinterpret_cast<const float*>(cfg + 0x1Cu) * 255.0f);
+    u32 c_b = static_cast<u32>(*reinterpret_cast<const float*>(cfg + 0x20u) * 255.0f);
+    u32 c_a = static_cast<u32>(*reinterpret_cast<const float*>(cfg + 0x24u) * 255.0f);
+    *reinterpret_cast<u32*>(state + 0x04u) = c_r | (c_g << 8) | (c_b << 16) | (c_a << 24);
+
+    u32 s8 = *reinterpret_cast<u32*>(state + 0x08u);
+    s8 = (s8 & ~0x07FF0000u) | ((*reinterpret_cast<const u32*>(s0 + 0x0Cu) & 0x7FFu) << 16);
+    s8 = (s8 & ~0x7FFu) | (*reinterpret_cast<const u32*>(s0 + 0x10u) & 0x7FFu);
+    *reinterpret_cast<u32*>(state + 0x08u) = s8;
+
+    *reinterpret_cast<u32*>(state + 0x2Cu) &= 0xFF000000u;
+    *reinterpret_cast<u32*>(state + 0x38u) =
+        (*reinterpret_cast<u32*>(state + 0x38u) & ~0xFu) |
+        (*reinterpret_cast<const u32*>(s0 + 0x1Cu) & 0xFu);
+
+    s32 fmt = *reinterpret_cast<const s32*>(s0 + 0x14u);
+    if (fmt == 0x6040) {
+        sc = (sc & ~0x70007730u) | 0x40100006u;
+        *reinterpret_cast<u32*>(state + 0x0Cu) = sc;
+        *reinterpret_cast<u32*>(state + 0x10u) &= ~0x0F0F1FFFu;
+    } else if ((fmt >= 0x1906 && fmt <= 0x190A) || fmt == 0x675A || fmt == 0x675B) {
+        sc = (sc & ~0x70000000u) | 0x10000000u;
+        *reinterpret_cast<u32*>(state + 0x0Cu) = sc;
+
+        u32 cfg8 = *reinterpret_cast<const u32*>(cfg + 0x08u);
+        if (cfg8 == 0x2901u) {
+            sc = (sc & ~0x7000u) | 0x2000u;
+            *reinterpret_cast<u32*>(state + 0x0Cu) = sc;
+        } else if (cfg8 == 0x812Du) {
+            sc = (sc & ~0x7000u) | 0x1000u;
+            *reinterpret_cast<u32*>(state + 0x0Cu) = sc;
+        } else if (cfg8 == 0x812Fu) {
+            sc &= ~0x7000u;
+            *reinterpret_cast<u32*>(state + 0x0Cu) = sc;
+        } else if (cfg8 == 0x8370u) {
+            sc = (sc & ~0x7000u) | 0x3000u;
+            *reinterpret_cast<u32*>(state + 0x0Cu) = sc;
+        }
+
+        u32 cfgc = *reinterpret_cast<const u32*>(cfg + 0x0Cu);
+        if (cfgc == 0x2901u) {
+            sc = (sc & ~0x700u) | 0x200u;
+            *reinterpret_cast<u32*>(state + 0x0Cu) = sc;
+        } else if (cfgc == 0x812Du) {
+            sc = (sc & ~0x700u) | 0x100u;
+            *reinterpret_cast<u32*>(state + 0x0Cu) = sc;
+        } else if (cfgc == 0x812Fu) {
+            sc &= ~0x700u;
+            *reinterpret_cast<u32*>(state + 0x0Cu) = sc;
+        } else if (cfgc == 0x8370u) {
+            sc = (sc & ~0x700u) | 0x300u;
+            *reinterpret_cast<u32*>(state + 0x0Cu) = sc;
+        }
+
+        u32 cfg0 = *reinterpret_cast<const u32*>(cfg + 0x00u);
+        if (cfg0 == 0x2600u) {
+            sc &= ~2u;
+            *reinterpret_cast<u32*>(state + 0x0Cu) = sc;
+        } else if (cfg0 == 0x2601u) {
+            sc |= 2u;
+            *reinterpret_cast<u32*>(state + 0x0Cu) = sc;
+        }
+
+        u32 cfg4 = *reinterpret_cast<const u32*>(cfg + 0x04u);
+        u32 s10 = *reinterpret_cast<u32*>(state + 0x10u);
+        if (cfg4 == 0x2600u) {
+            s10 &= ~0x0F0F0000u;
+            sc &= ~0x01000004u;
+            *reinterpret_cast<u32*>(state + 0x10u) = s10;
+            *reinterpret_cast<u32*>(state + 0x0Cu) = sc;
+        } else if (cfg4 == 0x2601u) {
+            s10 &= ~0x0F0F0000u;
+            sc = (sc & ~0x01000000u) | 4u;
+            *reinterpret_cast<u32*>(state + 0x10u) = s10;
+            *reinterpret_cast<u32*>(state + 0x0Cu) = sc;
+        } else if (cfg4 >= 0x2700u && cfg4 <= 0x2703u) {
+            u32 unit_idx = (*reinterpret_cast<const u32*>(s0 + 0x34u) - 1u) & 0xFu;
+            s32 cfg14 = *reinterpret_cast<const s32*>(cfg + 0x14u);
+            u32 alpha_ref = (cfg14 >= 0) ? (static_cast<u32>(cfg14) & 0xFu) : 0u;
+            s10 = (s10 & ~0x0F0F0000u) | (unit_idx << 16) | (alpha_ref << 24);
+            if (cfg4 & 1u) {
+                sc |= 4u;
+            } else {
+                sc &= ~4u;
+            }
+            if (cfg4 & 2u) {
+                sc |= 0x01000000u;
+            } else {
+                sc &= ~0x01000000u;
+            }
+            *reinterpret_cast<u32*>(state + 0x10u) = s10;
+            *reinterpret_cast<u32*>(state + 0x0Cu) = sc;
+        }
+
+        s10 &= ~0x1FFFu;
+        *reinterpret_cast<u32*>(state + 0x10u) = s10;
+        u32 fmt_bits = (fmt == 0x675A) ? 2u : 0u;
+        sc = (sc & ~0x30u) | (fmt_bits << 4);
+        *reinterpret_cast<u32*>(state + 0x0Cu) = sc;
+    } else {
+        return 0x0502u;
+    }
+
+    u32 addr0 = func_00147994(*reinterpret_cast<const u32*>(cfg + 0x34u));
+    *reinterpret_cast<u32*>(state + 0x14u) =
+        (*reinterpret_cast<u32*>(state + 0x14u) & 0xC0000000u) | (addr0 >> 3);
+
+    for (u32 k = 1u; k < 6u; ++k) {
+        u32 addr_k = func_00147994(*reinterpret_cast<const u32*>(cfg + 0x34u + k * 0x44u));
+        u32* dst = reinterpret_cast<u32*>(state + 0x14u + k * 4u);
+        *dst = (*dst & ~0x003FFFFFu) | ((addr_k >> 3) & 0x003FFFFFu);
+    }
+
+    *reinterpret_cast<u32*>(state) |= 1u;
+    func_002aa938(0x81u, 0x0Au);
+
+    u32* cmd_cur = *reinterpret_cast<u32**>(0x004652A0u);
+    u32* cmd_end = *reinterpret_cast<u32**>(0x004652A4u);
+    if (cmd_cur < cmd_end) {
+        cmd_cur[0] = *reinterpret_cast<u32*>(state + 0x38u);
+        cmd_cur[1] = 0x000F008Eu;
+        *reinterpret_cast<u32**>(0x004652A0u) = cmd_cur + 2;
+    }
+    return 0u;
 }
 
 // DECOMP_FUNC(0x00232cfc, 1624)
