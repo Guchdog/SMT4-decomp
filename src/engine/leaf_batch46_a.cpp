@@ -181,50 +181,38 @@ extern "C" u32 func_002c45c0(u32 handle, signed short val) {
     return 1u;
 }
 
+extern "C" void engine_func_00357190(void* self, u32 idx);
+
 // DECOMP_FUNC(0x0023bb2c, 304)
-extern "C" __attribute__((naked)) void engine_func_0023bb2c() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x43f0, 0xe92d, 0x0010, 0xe353\n"
-        ".hword 0x5000, 0xe1a0, 0x9002, 0xe1a0\n"
-        ".hword 0x6002, 0xe5d1, 0x7003, 0xe1a0\n"
-        ".hword 0xf103, 0x379f, 0x001f, 0xea00\n"
-        ".hword 0xbb8c, 0x0023, 0xbb8c, 0x0023\n"
-        ".hword 0xbb94, 0x0023, 0xbbb4, 0x0023\n"
-        ".hword 0xbb94, 0x0023, 0xbb94, 0x0023\n"
-        ".hword 0xbbb4, 0x0023, 0xbbbc, 0x0023\n"
-        ".hword 0xbb9c, 0x0023, 0xbb9c, 0x0023\n"
-        ".hword 0xbba4, 0x0023, 0xbbac, 0x0023\n"
-        ".hword 0xbbb4, 0x0023, 0xbbb4, 0x0023\n"
-        ".hword 0xbbbc, 0x0023, 0xbbc4, 0x0023\n"
-        ".hword 0x8001, 0xe3a0, 0x000e, 0xea00\n"
-        ".hword 0x8002, 0xe3a0, 0x000c, 0xea00\n"
-        ".hword 0x8003, 0xe3a0, 0x000a, 0xea00\n"
-        ".hword 0x8006, 0xe3a0, 0x0008, 0xea00\n"
-        ".hword 0x800c, 0xe3a0, 0x0006, 0xea00\n"
-        ".hword 0x8004, 0xe3a0, 0x0004, 0xea00\n"
-        ".hword 0x8008, 0xe3a0, 0x0002, 0xea00\n"
-        ".hword 0x8010, 0xe3a0, 0x0000, 0xea00\n"
-        ".hword 0x8000, 0xe3a0, 0x1006, 0xe1a0\n"
-        ".hword 0x6d6d, 0xeb04, 0xc000, 0xe3a0\n"
-        ".hword 0x400c, 0xe1a0, 0x0184, 0xe064\n"
-        ".hword 0x0200, 0xe085, 0x0160, 0xe590\n"
-        ".hword 0x0000, 0xe350, 0x0015, 0x0a00\n"
-        ".hword 0x4001, 0xe284, 0x000c, 0xe354\n"
-        ".hword 0xfff7, 0xbaff, 0x1006, 0xe085\n"
-        ".hword 0x0001, 0xe3a0, 0x0154, 0xe5c1\n"
-        ".hword 0x9000, 0xe58c, 0x7004, 0xe5cc\n"
-        ".hword 0x0000, 0xe3a0, 0x6040, 0xe58c\n"
-        ".hword 0x100b, 0xe3a0, 0x2000, 0xe1a0\n"
-        ".hword 0x4000, 0xe3e0, 0x8010, 0xe58c\n"
-        ".hword 0x3100, 0xe08c, 0x1001, 0xe251\n"
-        ".hword 0x2014, 0xe5a3, 0x0001, 0xe280\n"
-        ".hword 0x4030, 0xe583, 0xfff9, 0x1aff\n"
-        ".hword 0x2000, 0xe585, 0x83f0, 0xe8bd\n"
-        ".hword 0x0184, 0xe064, 0x0200, 0xe085\n"
-        ".hword 0xce16, 0xe280, 0xffe8, 0xeaff\n"
-    );
-};
+extern "C" void engine_func_0023bb2c(u8* self, const u8* desc, u32 a2, u32 kind) {
+    static const u8 kCounts[16] = {
+        1u, 1u, 2u, 4u, 2u, 2u, 4u, 8u,
+        3u, 3u, 6u, 12u, 4u, 4u, 8u, 16u,
+    };
+    const u8 r6 = desc[2];
+    const u32 r8 = (kind < 16u) ? kCounts[kind] : 0u;
+    engine_func_00357190(self, r6);
+
+    u8* slot = nullptr;
+    for (s32 i = 0; i < 12; ++i) {
+        u8* const p = self + 0x160 + i * 0x70;
+        if (*reinterpret_cast<const u32*>(p) == 0u) {
+            slot = p;
+            break;
+        }
+    }
+
+    self[0x154 + r6] = 1u;
+    *reinterpret_cast<u32*>(slot + 0x00) = a2;
+    slot[0x04] = static_cast<u8>(kind);
+    *reinterpret_cast<u32*>(slot + 0x40) = r6;
+    *reinterpret_cast<u32*>(slot + 0x10) = r8;
+    for (s32 j = 0; j < 11; ++j) {
+        *reinterpret_cast<u32*>(slot + 0x14 + j * 4) = 0u;
+        *reinterpret_cast<s32*>(slot + 0x44 + j * 4) = -1;
+    }
+    *reinterpret_cast<u32*>(self) = 0u;
+}
 
 // DECOMP_FUNC(0x0025741c, 312)
 extern "C" __attribute__((naked)) void battle_func_0025741c() {

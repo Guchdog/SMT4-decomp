@@ -3543,7 +3543,7 @@ address,size,status,category,name,src_file
 0x0023b834,76,matching,unknown,func_0023b834,src/engine/leaf_batch27_b.cpp
 0x0023b880,180,matching,engine,engine_func_0023b880,src/engine/leaf_batch42_c.cpp
 0x0023b934,504,matching,ui,ui_func_0023b934,src/engine/leaf_batch32_b.cpp
-0x0023bb2c,304,matching,engine,engine_func_0023bb2c,src/engine/leaf_batch46_a.cpp
+0x0023bb2c,304,non_matching,engine,engine_func_0023bb2c,src/engine/leaf_batch46_a.cpp
 0x0023bc5c,160,non_matching,unknown,func_0023bc5c,src/engine/leaf_batch31_c.cpp
 0x0023bcfc,1328,matching,unknown,func_0023bcfc,src/engine/leaf_batch44_a.cpp
 0x0023c22c,72,matching,unknown,func_0023c22c,src/engine/leaf_batch13_b.cpp
