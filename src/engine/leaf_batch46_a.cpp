@@ -214,51 +214,45 @@ extern "C" void engine_func_0023bb2c(u8* self, const u8* desc, u32 a2, u32 kind)
     *reinterpret_cast<u32*>(self) = 0u;
 }
 
+extern "C" u8* g_AsdGpuState;
+extern "C" u32 battle_func_002c5fa4(u32 a0, u32 a1, u32 a2);
+
 // DECOMP_FUNC(0x0025741c, 312)
-extern "C" __attribute__((naked)) void battle_func_0025741c() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x112c, 0xe59f, 0x4070, 0xe92d\n"
-        ".hword 0x0007, 0xe350, 0x5000, 0xe3a0\n"
-        ".hword 0x4000, 0xe591, 0xf100, 0x379f\n"
-        ".hword 0x8070, 0xe8bd, 0x7454, 0x0025\n"
-        ".hword 0x7454, 0x0025, 0x749c, 0x0025\n"
-        ".hword 0x74d8, 0x0025, 0x74d8, 0x0025\n"
-        ".hword 0x7514, 0x0025, 0x7514, 0x0025\n"
-        ".hword 0x2000, 0xe3a0, 0x1007, 0xe3a0\n"
-        ".hword 0x0006, 0xe3a0, 0xbacf, 0xeb01\n"
-        ".hword 0x4a01, 0xe284, 0x4fab, 0xe284\n"
-        ".hword 0x1000, 0xe594, 0x2101, 0xe084\n"
-        ".hword 0x1008, 0xe592, 0x0008, 0xe582\n"
-        ".hword 0x2018, 0xe5d4, 0x0000, 0xe352\n"
-        ".hword 0x0000, 0x0151, 0xffe9, 0x0aff\n"
-        ".hword 0x101c, 0xe594, 0xff31, 0xe12f\n"
-        ".hword 0x5018, 0xe5c4, 0x8070, 0xe8bd\n"
-        ".hword 0x2000, 0xe3a0, 0x1001, 0xe3a0\n"
-        ".hword 0x0006, 0xe3a0, 0xbabd, 0xeb01\n"
-        ".hword 0x4a01, 0xe284, 0x4fab, 0xe284\n"
-        ".hword 0x1000, 0xe594, 0x2101, 0xe084\n"
-        ".hword 0x1008, 0xe592, 0x0008, 0xe582\n"
-        ".hword 0x2018, 0xe5d4, 0x0000, 0xe352\n"
-        ".hword 0x0000, 0x0151, 0xffd7, 0x0aff\n"
-        ".hword 0xffec, 0xeaff, 0x2002, 0xe3a0\n"
-        ".hword 0x1001, 0xe3a0, 0x0006, 0xe3a0\n"
-        ".hword 0xbaae, 0xeb01, 0x4a01, 0xe284\n"
-        ".hword 0x4fab, 0xe284, 0x1000, 0xe594\n"
-        ".hword 0x2101, 0xe084, 0x1008, 0xe592\n"
-        ".hword 0x0008, 0xe582, 0x2018, 0xe5d4\n"
-        ".hword 0x0000, 0xe352, 0x0000, 0x0151\n"
-        ".hword 0xffc8, 0x0aff, 0xffdd, 0xeaff\n"
-        ".hword 0x2001, 0xe3a0, 0x1000, 0xe3a0\n"
-        ".hword 0x0005, 0xe3a0, 0xba9f, 0xeb01\n"
-        ".hword 0x4a01, 0xe284, 0x4fab, 0xe284\n"
-        ".hword 0x1000, 0xe594, 0x2101, 0xe084\n"
-        ".hword 0x1008, 0xe592, 0x0008, 0xe582\n"
-        ".hword 0x2018, 0xe5d4, 0x0000, 0xe352\n"
-        ".hword 0x0000, 0x0151, 0xffcf, 0x1aff\n"
-        ".hword 0x8070, 0xe8bd, 0xea00, 0x0044\n"
-    );
-};
+extern "C" void battle_func_0025741c(u32 mode) {
+    u8* const gpu = g_AsdGpuState;
+    u32 val;
+    switch (mode) {
+    case 0u:
+    case 1u:
+        val = battle_func_002c5fa4(6u, 7u, 0u);
+        break;
+    case 2u:
+        val = battle_func_002c5fa4(6u, 1u, 0u);
+        break;
+    case 3u:
+    case 4u:
+        val = battle_func_002c5fa4(6u, 1u, 2u);
+        break;
+    case 5u:
+    case 6u:
+        val = battle_func_002c5fa4(5u, 0u, 1u);
+        break;
+    default:
+        return;
+    }
+
+    u8* const state = gpu + 0x12ACu;
+    const u32 idx = *reinterpret_cast<const u32*>(state);
+    u32* const slot = reinterpret_cast<u32*>(state + idx * 4u + 8u);
+    const u32 prev = *slot;
+    *slot = val;
+    if (state[0x18] != 0u || prev != val) {
+        typedef void (*FlushFn)(void);
+        const FlushFn flush = *reinterpret_cast<const FlushFn*>(state + 0x1Cu);
+        flush();
+        state[0x18] = 0u;
+    }
+}
 
 // DECOMP_FUNC(0x0025beb8, 324)
 extern "C" __attribute__((naked)) void ui_func_0025beb8() {
