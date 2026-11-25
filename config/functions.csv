@@ -10963,6 +10963,6 @@ address,size,status,category,name,src_file
 0x003fcba4,288,matching,unknown,func_003fcba4,src/engine/leaf_batch16_c.cpp
 0x003fccc4,1128,matching,unknown,func_003fccc4,src/engine/leaf_batch43_a.cpp
 0x003fd12c,1088,matching,unknown,func_003fd12c,src/engine/leaf_batch43_a.cpp
-0x003fd56c,1432,matching,battle,battle_func_003fd56c,src/engine/leaf_batch45_c.cpp
+0x003fd56c,1432,non_matching,battle,battle_func_003fd56c,src/engine/leaf_batch45_c.cpp
 0x003fdb04,1300,matching,battle,battle_func_003fdb04,src/engine/leaf_batch43_a.cpp
 0x003fe018,1548,matching,battle,battle_func_003fe018,src/engine/leaf_batch43_a.cpp
