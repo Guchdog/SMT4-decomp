@@ -56,46 +56,28 @@ extern "C" __attribute__((naked)) void crt_func_00101208() {
     );
 };
 
+extern "C" const char* camp_func_002e384c(u32 id, u32 flag);
+extern "C" void camp_func_0029f10c(const char* msg, u32 color);
+extern "C" void ui_func_002be7fc(char* dst, const char* fmt, ...);
+extern "C" void camp_func_00254228(u32 color, u32 a1, u32 a2, u32 a3);
+
 // DECOMP_FUNC(0x00297e30, 272)
-extern "C" __attribute__((naked)) void camp_func_00297e30() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4070, 0xe92d, 0x5000, 0xe1a0\n"
-        ".hword 0x000b, 0xe351, 0xd080, 0xe24d\n"
-        ".hword 0x4001, 0xe1a0, 0x0000, 0xe3a0\n"
-        ".hword 0xf101, 0x379f, 0x0019, 0xea00\n"
-        ".hword 0x7eb8, 0x0029, 0x7e7c, 0x0029\n"
-        ".hword 0x7e84, 0x0029, 0x7e94, 0x0029\n"
-        ".hword 0x7eb4, 0x0029, 0x7eac, 0x0029\n"
-        ".hword 0x7eb8, 0x0029, 0x7e8c, 0x0029\n"
-        ".hword 0x7eb8, 0x0029, 0x7ea4, 0x0029\n"
-        ".hword 0x7e9c, 0x0029, 0x0001, 0xe3a0\n"
-        ".hword 0x000c, 0xea00, 0x0002, 0xe3a0\n"
-        ".hword 0x000a, 0xea00, 0x0003, 0xe3a0\n"
-        ".hword 0x0008, 0xea00, 0x0004, 0xe3a0\n"
-        ".hword 0x0006, 0xea00, 0x0005, 0xe3a0\n"
-        ".hword 0x0004, 0xea00, 0x0006, 0xe3a0\n"
-        ".hword 0x0002, 0xea00, 0x0008, 0xe3a0\n"
-        ".hword 0x0000, 0xea00, 0x0007, 0xe3a0\n"
-        ".hword 0x0000, 0xe352, 0x1001, 0x03a0\n"
-        ".hword 0x1000, 0x13a0, 0x2e60, 0xeb01\n"
-        ".hword 0x6068, 0xe59f, 0x0009, 0xe354\n"
-        ".hword 0x0003, 0x0a00, 0xd080, 0xe28d\n"
-        ".hword 0x1006, 0xe1a0, 0x4070, 0xe8bd\n"
-        ".hword 0x1c89, 0xea00, 0x4a03, 0xe285\n"
-        ".hword 0x1000, 0xe1a0, 0x206c, 0xe594\n"
-        ".hword 0x000d, 0xe1a0, 0x9a40, 0xfa00\n"
-        ".hword 0x1006, 0xe1a0, 0x000d, 0xe1a0\n"
-        ".hword 0x1c81, 0xeb00, 0x006c, 0xe594\n"
-        ".hword 0x0064, 0xe350, 0x3005, 0xa3a0\n"
-        ".hword 0x0002, 0xaa00, 0x000a, 0xe350\n"
-        ".hword 0x3004, 0xa3a0, 0x3003, 0xb3a0\n"
-        ".hword 0x0014, 0xe59f, 0x2012, 0xe3a0\n"
-        ".hword 0x1001, 0xe3a0, 0xf0bd, 0xebfe\n"
-        ".hword 0xd080, 0xe28d, 0x8070, 0xe8bd\n"
-        ".hword 0x32ff, 0x3232, 0x23ff, 0xa119\n"
-    );
-};
+extern "C" void camp_func_00297e30(u8* self, u32 kind, u32 flag) {
+    static const u8 kMap[11] = {0u, 1u, 2u, 4u, 7u, 8u, 0u, 3u, 0u, 6u, 5u};
+    const u32 id = (kind < 11u) ? kMap[kind] : 0u;
+    const char* const fmt = camp_func_002e384c(id, (flag == 0u) ? 1u : 0u);
+    if (kind != 9u) {
+        camp_func_0029f10c(fmt, 0x323232FFu);
+        return;
+    }
+
+    const s32 val = *reinterpret_cast<const s32*>(self + 0x306Cu);
+    char buf[0x80];
+    ui_func_002be7fc(buf, fmt, val);
+    camp_func_0029f10c(buf, 0x323232FFu);
+    const u32 a3 = (val >= 100) ? 5u : ((val >= 10) ? 4u : 3u);
+    camp_func_00254228(0xA11923FFu, 1u, 0x12u, a3);
+}
 
 // DECOMP_FUNC(0x0022aaac, 288)
 extern "C" __attribute__((naked)) void ui_func_0022aaac() {
