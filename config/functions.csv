@@ -2962,7 +2962,7 @@ address,size,status,category,name,src_file
 0x0021a580,44,matching,unknown,func_0021a580,src/engine/leaf_batch39_b.cpp
 0x0021a5ac,48,matching,unknown,func_0021a5ac,src/engine/leaf_batch35_a.cpp
 0x0021a5dc,52,matching,engine,engine_func_0021a5dc,src/engine/leaf_batch39_b.cpp
-0x0021a610,1492,matching,unknown,func_0021a610,src/engine/leaf_batch45_c.cpp
+0x0021a610,1492,non_matching,unknown,func_0021a610,src/engine/leaf_batch45_c.cpp
 0x0021abe4,96,matching,engine,engine_func_0021abe4,src/engine/leaf_batch34_b.cpp
 0x0021ac44,208,matching,unknown,func_0021ac44,src/engine/leaf_batch35_b.cpp
 0x0021ad14,48,matching,unknown,func_0021ad14,src/engine/leaf_batch35_a.cpp
