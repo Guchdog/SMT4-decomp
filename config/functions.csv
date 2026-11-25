@@ -4935,7 +4935,7 @@ address,size,status,category,name,src_file
 0x0029adf0,320,non_matching,ui,StatusDown_DrawLRPrompts,src/ui/status_down.cpp
 0x0029af30,28,matching,ui,Status_GetMainMenuId,src/ui/status.cpp
 0x0029af4c,20,matching,ui,Status_GetSelectedActorPtr,src/ui/status.cpp
-0x0029af60,384,matching,script_vm,script_vm_func_0029af60,src/engine/leaf_batch46_a.cpp
+0x0029af60,384,non_matching,script_vm,script_vm_func_0029af60,src/engine/leaf_batch46_a.cpp
 0x0029b0e0,28,matching,ui,Status_GetSubState,src/ui/status.cpp
 0x0029b0fc,144,matching,ui,ui_func_0029b0fc,src/engine/leaf_batch14_b.cpp
 0x0029b18c,388,matching,camp,camp_func_0029b18c,src/engine/leaf_batch33_c.cpp
