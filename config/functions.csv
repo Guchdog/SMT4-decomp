@@ -3367,7 +3367,7 @@ address,size,status,category,name,src_file
 0x00233598,12,matching,engine,engine_func_00233598,src/engine/leaf_batch38_a.cpp
 0x002335a4,28,matching,shop,shop_func_002335a4,src/engine/leaf_batch34_b.cpp
 0x002335c0,64,matching,ui,ui_func_002335c0,src/engine/leaf_batch27_b.cpp
-0x00233600,396,matching,unite,unite_func_00233600,src/engine/leaf_batch46_a.cpp
+0x00233600,396,non_matching,unite,unite_func_00233600,src/engine/leaf_batch46_a.cpp
 0x0023378c,20,matching,engine,engine_func_0023378c,src/engine/leaf_matching.cpp
 0x002337a0,100,matching,shop,shop_func_002337a0,src/engine/leaf_batch35_c.cpp
 0x00233804,168,non_matching,unite,unite_func_00233804,src/engine/leaf_batch31_c.cpp
