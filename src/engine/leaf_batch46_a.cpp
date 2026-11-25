@@ -147,48 +147,39 @@ extern "C" u32 camp_func_0028fde4(u32 flag_id) {
     return 0u;
 }
 
+extern "C" void func_002c43f4(void* obj);
+
 // DECOMP_FUNC(0x002c45c0, 288)
-extern "C" __attribute__((naked)) void func_002c45c0() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4070, 0xe92d, 0x2110, 0xe59f\n"
-        ".hword 0x3000, 0xe592, 0x2a20, 0xe1a0\n"
-        ".hword 0x0600, 0xe1a0, 0x4182, 0xe793\n"
-        ".hword 0x0620, 0xe1a0, 0x0000, 0xe354\n"
-        ".hword 0x0005, 0x0a00, 0x2024, 0xe594\n"
-        ".hword 0x0000, 0xe152, 0x0003, 0x0a00\n"
-        ".hword 0x404c, 0xe594, 0x0000, 0xe354\n"
-        ".hword 0xfff9, 0x1aff, 0x4000, 0xe3a0\n"
-        ".hword 0x1071, 0xe6bf, 0x0098, 0xe5d4\n"
-        ".hword 0x6004, 0xe3a0, 0x0006, 0xe350\n"
-        ".hword 0xf100, 0x379f, 0x002e, 0xea00\n"
-        ".hword 0x46d4, 0x002c, 0x4630, 0x002c\n"
-        ".hword 0x4630, 0x002c, 0x4630, 0x002c\n"
-        ".hword 0x467c, 0x002c, 0x467c, 0x002c\n"
-        ".hword 0x13b6, 0xe1c4, 0x0058, 0xe594\n"
-        ".hword 0x0000, 0xe350, 0x0006, 0x0a00\n"
-        ".hword 0x13b6, 0xe1d4, 0x505c, 0xe590\n"
-        ".hword 0x13b6, 0xe1c0, 0xff68, 0xebff\n"
-        ".hword 0x0005, 0xe1b0, 0xf000, 0xe320\n"
-        ".hword 0xfff8, 0x1aff, 0x0098, 0xe5d4\n"
-        ".hword 0x0004, 0xe350, 0xf100, 0x379f\n"
-        ".hword 0x0017, 0xea00, 0x46cc, 0x002c\n"
-        ".hword 0x46c8, 0x002c, 0x46c8, 0x002c\n"
-        ".hword 0x46c8, 0x002c, 0x13b6, 0xe1c4\n"
-        ".hword 0x0058, 0xe594, 0x0000, 0xe350\n"
-        ".hword 0x0006, 0x0a00, 0x13b6, 0xe1d4\n"
-        ".hword 0x505c, 0xe590, 0x13b6, 0xe1c0\n"
-        ".hword 0xff55, 0xebff, 0x0005, 0xe1b0\n"
-        ".hword 0xf000, 0xe320, 0xfff8, 0x1aff\n"
-        ".hword 0x0098, 0xe5d4, 0x0004, 0xe350\n"
-        ".hword 0xf100, 0x379f, 0x0004, 0xea00\n"
-        ".hword 0x46cc, 0x002c, 0x46c8, 0x002c\n"
-        ".hword 0x46c8, 0x002c, 0x46c8, 0x002c\n"
-        ".hword 0x6098, 0xe5c4, 0x0001, 0xe3a0\n"
-        ".hword 0x8070, 0xe8bd, 0x0000, 0xe3a0\n"
-        ".hword 0x8070, 0xe8bd, 0x3cf4, 0x004e\n"
-    );
-};
+extern "C" u32 func_002c45c0(u32 handle, signed short val) {
+    u8* const* const buckets = *reinterpret_cast<u8* const* const*>(0x004E3CF4u);
+    u8* node = buckets[(handle >> 20) * 2u];
+    const u32 key = handle & 0x000FFFFFu;
+    while (node != nullptr) {
+        if (*reinterpret_cast<const u32*>(node + 0x24) == key) {
+            break;
+        }
+        node = *reinterpret_cast<u8**>(node + 0x4C);
+    }
+
+    const u8 st = node[0x98];
+    if (st == 0u || st >= 6u) {
+        return 0u;
+    }
+
+    *reinterpret_cast<signed short*>(node + 0x36) = val;
+    u8* child = *reinterpret_cast<u8**>(node + 0x58);
+    while (child != nullptr) {
+        u8* const next = *reinterpret_cast<u8**>(child + 0x5C);
+        *reinterpret_cast<u16*>(child + 0x36) = *reinterpret_cast<const u16*>(node + 0x36);
+        func_002c43f4(child);
+        child = next;
+    }
+
+    if (node[0x98] >= 1u && node[0x98] <= 3u) {
+        node[0x98] = 4u;
+    }
+    return 1u;
+}
 
 // DECOMP_FUNC(0x0023bb2c, 304)
 extern "C" __attribute__((naked)) void engine_func_0023bb2c() {
