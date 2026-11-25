@@ -418,56 +418,68 @@ extern "C" u32 script_vm_func_00273760(u8* self) {
     }
 }
 
+extern "C" void func_002015b0(void* a0, void* a1, void* a2, void* a3, void* a4, void* a5, void* a6);
+extern "C" void func_002547cc(f32* dst, f32 target, f32 rate);
+
 // DECOMP_FUNC(0x002009c0, 348)
-extern "C" __attribute__((naked)) void func_002009c0() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4030, 0xe92d, 0x4000, 0xe1a0\n"
-        ".hword 0x5000, 0xe3a0, 0x8b02, 0xed2d\n"
-        ".hword 0xd00c, 0xe24d, 0x006c, 0xe5d0\n"
-        ".hword 0x8a4d, 0xeddf, 0x8a4d, 0xed9f\n"
-        ".hword 0x0006, 0xe350, 0xf100, 0x379f\n"
-        ".hword 0x0043, 0xea00, 0x0afc, 0x0020\n"
-        ".hword 0x0a04, 0x0020, 0x0a1c, 0x0020\n"
-        ".hword 0x0b08, 0x0020, 0x0ab0, 0x0020\n"
-        ".hword 0x0a60, 0x0020, 0x0008, 0xe594\n"
-        ".hword 0x1000, 0xe594, 0x0001, 0xe150\n"
-        ".hword 0x0002, 0xa3a0, 0x006c, 0xa5c4\n"
-        ".hword 0x0037, 0xba00, 0x204c, 0xe284\n"
-        ".hword 0x103c, 0xe284, 0x002c, 0xe284\n"
-        ".hword 0x0007, 0xe88d, 0x3064, 0xe284\n"
-        ".hword 0x205c, 0xe284, 0x1060, 0xe284\n"
-        ".hword 0x000c, 0xe284, 0x02db, 0xeb00\n"
-        ".hword 0x00d4, 0xe1c4, 0x0001, 0xe150\n"
-        ".hword 0x002b, 0xca00, 0x0068, 0xe594\n"
-        ".hword 0x0001, 0xe350, 0x0003, 0x03a0\n"
-        ".hword 0x006c, 0x05c4, 0x0026, 0x0a00\n"
-        ".hword 0x5008, 0xe584, 0x506c, 0xe5c4\n"
-        ".hword 0x5068, 0xe584, 0x500c, 0xe584\n"
-        ".hword 0x5010, 0xe584, 0x5014, 0xe584\n"
-        ".hword 0x5018, 0xe584, 0x501c, 0xe584\n"
-        ".hword 0x5020, 0xe584, 0x5024, 0xe584\n"
-        ".hword 0x5028, 0xe584, 0x8a0b, 0xed84\n"
-        ".hword 0x8a0c, 0xed84, 0x8a0d, 0xed84\n"
-        ".hword 0x8a0f, 0xedc4, 0x8a13, 0xed84\n"
-        ".hword 0x5060, 0xe584, 0x505c, 0xe584\n"
-        ".hword 0x5064, 0xe584, 0x0012, 0xea00\n"
-        ".hword 0x0a48, 0xeef0, 0x0a0f, 0xed94\n"
-        ".hword 0x002c, 0xe284, 0x4f42, 0xeb01\n"
-        ".hword 0x0a48, 0xeef0, 0x0a10, 0xed94\n"
-        ".hword 0x0030, 0xe284, 0x4f3e, 0xeb01\n"
-        ".hword 0x0a48, 0xeef0, 0x0a11, 0xed94\n"
-        ".hword 0x0034, 0xe284, 0x4f3a, 0xeb01\n"
-        ".hword 0x1004, 0xe594, 0x0008, 0xe594\n"
-        ".hword 0x100a, 0xe281, 0x0001, 0xe150\n"
-        ".hword 0x0005, 0xa3a0, 0x006c, 0xa5c4\n"
-        ".hword 0xffd8, 0xaaff, 0x0008, 0xe594\n"
-        ".hword 0x0001, 0xe280, 0x0008, 0xe584\n"
-        ".hword 0xd00c, 0xe28d, 0x8b02, 0xecbd\n"
-        ".hword 0x8030, 0xe8bd, 0x0000, 0x0000\n"
-        ".hword 0x0000, 0x3f00\n"
-    );
-};
+extern "C" void func_002009c0(u8* self) {
+    auto reset_state = [self]() {
+        *reinterpret_cast<u32*>(self + 0x08u) = 0u;
+        self[0x6Cu] = 0u;
+        *reinterpret_cast<u32*>(self + 0x68u) = 0u;
+        for (u32 off = 0x0Cu; off <= 0x28u; off += 4u) {
+            *reinterpret_cast<u32*>(self + off) = 0u;
+        }
+        *reinterpret_cast<f32*>(self + 0x2Cu) = 0.5f;
+        *reinterpret_cast<f32*>(self + 0x30u) = 0.5f;
+        *reinterpret_cast<f32*>(self + 0x34u) = 0.5f;
+        *reinterpret_cast<f32*>(self + 0x3Cu) = 0.0f;
+        *reinterpret_cast<f32*>(self + 0x4Cu) = 0.5f;
+        *reinterpret_cast<u32*>(self + 0x60u) = 0u;
+        *reinterpret_cast<u32*>(self + 0x5Cu) = 0u;
+        *reinterpret_cast<u32*>(self + 0x64u) = 0u;
+    };
+
+    const u8 state = self[0x6Cu];
+    switch (state) {
+    case 1u:
+        if (*reinterpret_cast<const s32*>(self + 0x08u) < *reinterpret_cast<const s32*>(self + 0x00u)) {
+            break;
+        }
+        self[0x6Cu] = 2u;
+        // fall through
+    case 2u:
+        func_002015b0(self + 0x0Cu, self + 0x60u, self + 0x5Cu, self + 0x64u,
+                      self + 0x2Cu, self + 0x3Cu, self + 0x4Cu);
+        if (*reinterpret_cast<const s32*>(self + 0x04u) > *reinterpret_cast<const s32*>(self + 0x08u)) {
+            break;
+        }
+        if (*reinterpret_cast<const u32*>(self + 0x68u) == 1u) {
+            self[0x6Cu] = 3u;
+            break;
+        }
+        reset_state();
+        break;
+    case 3u:
+        return;
+    case 4u:
+        func_002547cc(reinterpret_cast<f32*>(self + 0x2Cu), *reinterpret_cast<const f32*>(self + 0x3Cu), 0.5f);
+        func_002547cc(reinterpret_cast<f32*>(self + 0x30u), *reinterpret_cast<const f32*>(self + 0x40u), 0.5f);
+        func_002547cc(reinterpret_cast<f32*>(self + 0x34u), *reinterpret_cast<const f32*>(self + 0x44u), 0.5f);
+        if (*reinterpret_cast<const s32*>(self + 0x08u) >= *reinterpret_cast<const s32*>(self + 0x04u) + 10) {
+            self[0x6Cu] = 5u;
+            reset_state();
+        }
+        break;
+    case 5u:
+        reset_state();
+        break;
+    default:
+        break;
+    }
+
+    *reinterpret_cast<s32*>(self + 0x08u) += 1;
+}
 
 // DECOMP_FUNC(0x002b8d24, 360)
 extern "C" __attribute__((minsize)) uint32_t battle_func_002b8d24(uint8_t* object, uint32_t selector) {
