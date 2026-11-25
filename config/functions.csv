@@ -3959,7 +3959,7 @@ address,size,status,category,name,src_file
 0x00254840,28,matching,camp,camp_func_00254840,src/engine/leaf_batch22_b.cpp
 0x0025485c,32,matching,camp,camp_func_0025485c,src/engine/leaf_batch39_a.cpp
 0x0025487c,20,matching,camp,camp_func_0025487c,src/engine/leaf_batch21_b.cpp
-0x00254890,468,matching,ui,ui_func_00254890,src/engine/leaf_batch46_a.cpp
+0x00254890,468,non_matching,ui,ui_func_00254890,src/engine/leaf_batch46_a.cpp
 0x00254a64,96,non_matching,unknown,func_00254a64,src/engine/leaf_batch30_b.cpp
 0x00254ac4,424,matching,ui,ui_func_00254ac4,src/engine/leaf_batch44_b.cpp
 0x00254c6c,60,matching,engine,engine_func_00254c6c,src/engine/leaf_batch27_b.cpp

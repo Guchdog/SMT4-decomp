@@ -1222,71 +1222,71 @@ extern "C" void ui_func_0033d324(u8* self) {
     }
 }
 
+extern "C" void ui_func_002940ac(u32 a0, f32 sx, f32 sy, f32 sz);
+extern "C" void ui_func_00282f00(f32 x, f32 y, f32 z);
+extern "C" void ui_func_00294054(u32 a0, const u8* p);
+extern "C" void ui_func_0020fe84(u32 a0, u32 a1, f32 x, f32 y);
+
 // DECOMP_FUNC(0x00254890, 468)
-extern "C" __attribute__((naked)) void ui_func_00254890() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4010, 0xe92d, 0x1a67, 0xed9f\n"
-        ".hword 0x0a68, 0xed9f, 0x0a68, 0xeddf\n"
-        ".hword 0x0005, 0xe351, 0x8b04, 0xed2d\n"
-        ".hword 0xd010, 0xe24d, 0x4000, 0xe1a0\n"
-        ".hword 0x9a61, 0xeddf, 0x8a63, 0xeddf\n"
-        ".hword 0x8a63, 0xed9f, 0x9a63, 0xed9f\n"
-        ".hword 0xf101, 0x379f, 0x0035, 0xea00\n"
-        ".hword 0x48dc, 0x0025, 0x4944, 0x0025\n"
-        ".hword 0x49ac, 0x0025, 0x49e8, 0x0025\n"
-        ".hword 0x4a08, 0x0025, 0x0a06, 0xed94\n"
-        ".hword 0x116c, 0xe59f, 0x0a10, 0xee10\n"
-        ".hword 0x0001, 0xe150, 0x0004, 0xaa00\n"
-        ".hword 0x0a01, 0xee30, 0x0028, 0xe594\n"
-        ".hword 0x0001, 0xe280, 0x0a06, 0xed84\n"
-        ".hword 0x0028, 0xe584, 0x0a06, 0xed94\n"
-        ".hword 0x001c, 0xe594, 0x1a40, 0xeeb0\n"
-        ".hword 0x0a40, 0xeef0, 0xfde4, 0xeb00\n"
-        ".hword 0x0a68, 0xeeb0, 0x1a49, 0xeeb0\n"
-        ".hword 0x0a48, 0xeef0, 0x0028, 0xe594\n"
-        ".hword 0x0000, 0xe350, 0x0019, 0xda00\n"
-        ".hword 0x0a90, 0xee01, 0x0a48, 0xeef0\n"
-        ".hword 0x1ae1, 0xeef8, 0x0aa9, 0xee41\n"
-        ".hword 0x0014, 0xea00, 0x110c, 0xe59f\n"
-        ".hword 0x0018, 0xe594, 0x0001, 0xe150\n"
-        ".hword 0x0005, 0xda00, 0x0a10, 0xee00\n"
-        ".hword 0x1028, 0xe594, 0x0001, 0xe241\n"
-        ".hword 0x0a41, 0xee30, 0x0a06, 0xed84\n"
-        ".hword 0x0028, 0xe584, 0x0a06, 0xed94\n"
-        ".hword 0x001c, 0xe594, 0x1a40, 0xeeb0\n"
-        ".hword 0x0a40, 0xeef0, 0xfdca, 0xeb00\n"
-        ".hword 0x0a68, 0xeeb0, 0x1a49, 0xeeb0\n"
-        ".hword 0x0a48, 0xeef0, 0x0028, 0xe594\n"
-        ".hword 0x0000, 0xe350, 0xffe5, 0xcaff\n"
-        ".hword 0xf000, 0xe320, 0xb957, 0xeb00\n"
-        ".hword 0xd010, 0xe28d, 0x8b04, 0xecbd\n"
-        ".hword 0x8010, 0xe8bd, 0x1a04, 0xed94\n"
-        ".hword 0x10a4, 0xe59f, 0x0a00, 0xee31\n"
-        ".hword 0x0a10, 0xee10, 0x0a04, 0xed84\n"
-        ".hword 0x0001, 0xe150, 0x0a60, 0xce30\n"
-        ".hword 0x0000, 0xda00, 0x0a04, 0xed84\n"
-        ".hword 0x001c, 0xe594, 0x100c, 0xe284\n"
-        ".hword 0xfd9d, 0xeb00, 0xd010, 0xe28d\n"
-        ".hword 0x8b04, 0xecbd, 0x8010, 0xe8bd\n"
-        ".hword 0x1a04, 0xed94, 0x0a40, 0xee31\n"
-        ".hword 0x0a04, 0xed84, 0x0ae8, 0xeeb4\n"
-        ".hword 0xfa10, 0xeef1, 0x0a20, 0x3e30\n"
-        ".hword 0xfff2, 0x2aff, 0xfff0, 0xeaff\n"
-        ".hword 0x2050, 0xe59f, 0x0a68, 0xeeb0\n"
-        ".hword 0x0007, 0xe892, 0x0a40, 0xeef0\n"
-        ".hword 0x0007, 0xe88d, 0x0024, 0xe594\n"
-        ".hword 0x1100, 0xe79d, 0x001c, 0xe594\n"
-        ".hword 0xed15, 0xebfe, 0xd010, 0xe28d\n"
-        ".hword 0x8b04, 0xecbd, 0x8010, 0xe8bd\n"
-        ".hword 0x126f, 0x3a03, 0xd70a, 0x3da3\n"
-        ".hword 0x0000, 0x40a0, 0x0000, 0x43b4\n"
-        ".hword 0x0000, 0x0000, 0x999a, 0x40c9\n"
-        ".hword 0x0000, 0x4090, 0xc28f, 0x3cf5\n"
-        ".hword 0x9ba6, 0x3c44, 0x0000, 0x43b4\n"
-        ".hword 0x2930, 0x0040\n"
-    );
-};
+extern "C" void ui_func_00254890(u8* self, u32 op) {
+    const f32 kStep = 0.0005f;
+    switch (op) {
+    case 0u: {
+        f32* const scale = reinterpret_cast<f32*>(self + 0x18u);
+        if (*scale < 0.03f) {
+            *scale += kStep;
+            *reinterpret_cast<s32*>(self + 0x28u) += 1;
+        }
+        const f32 s = *scale;
+        ui_func_002940ac(*reinterpret_cast<const u32*>(self + 0x1Cu), s, s, s);
+        const s32 cnt = *reinterpret_cast<const s32*>(self + 0x28u);
+        const f32 y = (cnt > 0) ? (6.3f + static_cast<f32>(cnt) * 0.08f) : 6.3f;
+        ui_func_00282f00(0.0f, y, 4.5f);
+        break;
+    }
+    case 1u: {
+        f32* const scale = reinterpret_cast<f32*>(self + 0x18u);
+        if (*scale > 0.012f) {
+            *scale -= kStep;
+            *reinterpret_cast<s32*>(self + 0x28u) -= 1;
+        }
+        const f32 s = *scale;
+        ui_func_002940ac(*reinterpret_cast<const u32*>(self + 0x1Cu), s, s, s);
+        const s32 cnt = *reinterpret_cast<const s32*>(self + 0x28u);
+        const f32 y = (cnt > 0) ? (6.3f + static_cast<f32>(cnt) * 0.08f) : 6.3f;
+        ui_func_00282f00(0.0f, y, 4.5f);
+        break;
+    }
+    case 2u: {
+        f32* const ang = reinterpret_cast<f32*>(self + 0x10u);
+        f32 a = *ang + 5.0f;
+        if (a > 360.0f) {
+            a -= 360.0f;
+        }
+        *ang = a;
+        ui_func_00294054(*reinterpret_cast<const u32*>(self + 0x1Cu), self + 0x0Cu);
+        break;
+    }
+    case 3u: {
+        f32* const ang = reinterpret_cast<f32*>(self + 0x10u);
+        f32 a = *ang - 5.0f;
+        if (a < 0.0f) {
+            a += 360.0f;
+        }
+        *ang = a;
+        ui_func_00294054(*reinterpret_cast<const u32*>(self + 0x1Cu), self + 0x0Cu);
+        break;
+    }
+    case 4u: {
+        const u32* const tbl = reinterpret_cast<const u32*>(0x00402930u);
+        const u32 idx = *reinterpret_cast<const u32*>(self + 0x24u);
+        ui_func_0020fe84(*reinterpret_cast<const u32*>(self + 0x1Cu), tbl[idx], 0.0f, 0.0f);
+        break;
+    }
+    default:
+        break;
+    }
+}
 
 // DECOMP_FUNC(0x002d7b48, 468)
 extern "C" __attribute__((naked)) void CommonBg_func_002d7b48() {
