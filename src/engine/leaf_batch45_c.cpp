@@ -7899,105 +7899,189 @@ extern "C" s32 engine_func_001b0fe0() {
     }
 }
 
+extern "C" u32 func_003fbe64(void* vec, void* item);
+
+namespace {
+
+struct AllocVtbl003af524 {
+    void* (*alloc)(void* self, u32 size);
+    void (*free)(void* self, void* ptr);
+    void (*on_oom)(void* self, const char* msg, u32 size);
+};
+
+struct AllocObj003af524 {
+    const AllocVtbl003af524* vtbl;
+};
+
+struct ByteVec003af524 {
+    AllocObj003af524* alloc;
+    u8* data;
+    u32 cap;
+    u32 size;
+};
+
+struct RefNode003af524 {
+    AllocObj003af524* alloc;
+    void* obj;
+    RefNode003af524* prev;
+    RefNode003af524* next;
+};
+
+struct RefVec003af524 {
+    AllocObj003af524* alloc;
+    RefNode003af524* data;
+    u32 cap;
+    u32 size;
+};
+
+struct TableHeader003af524 {
+    u32 count;
+    // Followed by entries of 20 bytes: { key (+0x04 from base + i*20), cap0 (+0x08), cap1 (+0x0C), cap2 (+0x10), cap3 (+0x14) }
+};
+
+struct TableEntry003af524 {
+    u32 pad_or_prev;
+    u32 key;
+    u32 cap0;
+    u32 cap1;
+    u32 cap2;
+    u32 cap3;
+};
+
+inline bool reserve_byte_vec_003af524(ByteVec003af524* vec, u32 new_cap) {
+    if (vec->cap >= new_cap) {
+        return true;
+    }
+    AllocObj003af524* alloc = vec->alloc;
+    u8* new_buf = nullptr;
+    if (new_cap != 0u) {
+        new_buf = static_cast<u8*>(alloc->vtbl->alloc(alloc, new_cap));
+        if (new_buf == nullptr) {
+            alloc->vtbl->on_oom(alloc, reinterpret_cast<const char*>(0x0040FF98u), new_cap);
+            alloc->vtbl->free(alloc, nullptr);
+            return false;
+        }
+    }
+    u8* old_buf = vec->data;
+    for (u32 i = 0; i < vec->size; ++i) {
+        new_buf[i] = old_buf[i];
+    }
+    vec->data = new_buf;
+    vec->cap = new_cap;
+    alloc->vtbl->free(alloc, old_buf);
+    return true;
+}
+
+inline void unlink_ref_node_003af524(RefNode003af524* node) {
+    RefNode003af524* p = node->prev;
+    if (p == nullptr || p == node) {
+        if (node->obj != nullptr) {
+            node->alloc->vtbl->free(node->alloc, node->obj);
+        }
+    } else {
+        RefNode003af524* n = node->next;
+        n->prev = p;
+        p->next = n;
+        node->prev = nullptr;
+        node->next = nullptr;
+    }
+    node->obj = nullptr;
+}
+
+inline bool reserve_ref_vec_003af524(RefVec003af524* vec, u32 new_cap) {
+    if (vec->cap >= new_cap) {
+        return true;
+    }
+    AllocObj003af524* alloc = vec->alloc;
+    RefNode003af524* new_buf = nullptr;
+    if (new_cap != 0u) {
+        u32 byte_sz = new_cap << 4;
+        new_buf = static_cast<RefNode003af524*>(alloc->vtbl->alloc(alloc, byte_sz));
+        if (new_buf == nullptr) {
+            alloc->vtbl->on_oom(alloc, reinterpret_cast<const char*>(0x0040FF98u), byte_sz);
+            alloc->vtbl->free(alloc, nullptr);
+            return false;
+        }
+    }
+    RefNode003af524* old_buf = vec->data;
+    u32 sz = vec->size;
+    for (u32 i = 0; i < sz; ++i) {
+        RefNode003af524* src = &old_buf[i];
+        RefNode003af524* dst = &new_buf[i];
+        dst->alloc = src->alloc;
+        dst->obj = src->obj;
+        RefNode003af524* nxt = src->next;
+        dst->next = nxt;
+        nxt->prev = dst;
+        dst->prev = src;
+        src->next = dst;
+    }
+    vec->data = new_buf;
+    vec->cap = new_cap;
+    for (u32 i = 0; i < sz; ++i) {
+        unlink_ref_node_003af524(&old_buf[i]);
+    }
+    alloc->vtbl->free(alloc, old_buf);
+    return true;
+}
+
+} // namespace
+
 // DECOMP_FUNC(0x003af524, 1484)
-// Capstone ARM full coverage (371 instructions); raw bytes only, no terminal-return claim.
-extern "C" __attribute__((naked)) void func_003af524() {
-    asm volatile(
-        ".arm\n"
-        ".word 0xe92d4ff0, 0xe1a05000, 0xe24dd014, 0xe3a00000\n"
-        ".word 0xe592c000, 0xe35c0000, 0x9a000167, 0xe0803100\n"
-        ".word 0xe0823103, 0xe5933004, 0xe1530001, 0x1a00015f\n"
-        ".word 0xe0800100, 0xe2856004, 0xe0829100, 0xe595000c\n"
-        ".word 0xe5997008, 0xe3a0b000, 0xe1500007, 0x2a000032\n"
-        ".word 0xe5964000, 0xe3570000, 0xe1a0100b, 0xe1a0c00b\n"
-        ".word 0x0a00000f, 0xe5941000, 0xe1a00004, 0xe5912000\n"
-        ".word 0xe1a01007, 0xe12fff32, 0xe1b08000, 0x1a000005\n"
-        ".word 0xe5941000, 0xe1a00004, 0xe1a02007, 0xe5913008\n"
-        ".word 0xe59f1530, 0xe12fff33, 0xe1b01008, 0x11a0c007\n"
-        ".word 0x0a00002f, 0xe596700c, 0xe5963004, 0xe3570000\n"
-        ".word 0x11a02001, 0x0a000007, 0xe1a08003, 0xe1b00002\n"
-        ".word 0x15d88000, 0xe2802001, 0xe2833001, 0x15c08000\n"
-        ".word 0xe2577001, 0x1afffff7, 0xe2862004, 0xe5960004\n"
-        ".word 0xe8821002, 0xe596100c, 0xe0811000, 0xe0411000\n"
-        ".word 0xe3510000, 0xda000003, 0xe1b010c1, 0x0a000001\n"
-        ".word 0xe2511001, 0x1afffffd, 0xe5942000, 0xe1a01000\n"
-        ".word 0xe1a00004, 0xe5922004, 0xe12fff32, 0xe599400c\n"
-        ".word 0xe5950028, 0xe1500004, 0x2a000058, 0xe5958020\n"
-        ".word 0xe3540000, 0xe1a0100b, 0xe1a0300b, 0x0a000015\n"
-        ".word 0xe5980000, 0xe1a01204, 0xe1a07001, 0xe5902000\n"
-        ".word 0xe1a00008, 0xe12fff32, 0xe1b06000, 0x1a00000a\n"
-        ".word 0xea000003, 0xe5942000, 0xe1a00004, 0xe5922004\n"
-        ".word 0xea000036, 0xe5981000, 0xe1a00008, 0xe1a02007\n"
-        ".word 0xe5913008, 0xe59f143c, 0xe12fff33, 0xe1b01006\n"
-        ".word 0x11a03004, 0x0a00002a, 0xe595602c, 0xe5954024\n"
-        ".word 0xe3560000, 0x11a0c001, 0x0a00000f, 0xe1b0000c\n"
-        ".word 0xe1a02004, 0xe280c010, 0xe2844010, 0x0a000008\n"
-        ".word 0xe5927000, 0xe5807000, 0xe5927004, 0xe5807004\n"
-        ".word 0xe592700c, 0xe580700c, 0xe5870008, 0xe5802008\n"
-        ".word 0xe582000c, 0xe2566001, 0x1affffef, 0xe2850024\n"
-        ".word 0xe5956024, 0xe880000a, 0xe595002c, 0xe1a0a006\n"
-        ".word 0xe0867200, 0xe1560007, 0x2a00001b, 0xe1a04006\n"
-        ".word 0xe2866010, 0xe5940008, 0xe3500000, 0x11500004\n"
-        ".word 0x1a00000c, 0xe5941004, 0xe3510000, 0x0a00000f\n"
-        ".word 0xe5940000, 0xe5902000, 0xe5922004, 0xe12fff32\n"
-        ".word 0xea00000a, 0xe5980000, 0xe5902004, 0xe1a00008\n"
-        ".word 0xe12fff32, 0xea0000d2, 0xe594100c, 0xe580100c\n"
-        ".word 0xe1c400d8, 0xe5810008, 0xe584b008, 0xe584b00c\n"
-        ".word 0xe1560007, 0xe584b004, 0x3affffe3, 0xe5981000\n"
-        ".word 0xe1a00008, 0xe5912004, 0xe1a0100a, 0xe12fff32\n"
-        ".word 0xe599000c, 0xe2507001, 0x3a00002b, 0xe5950000\n"
-        ".word 0xe1a0400d, 0xe1a06000, 0xe5901000, 0xe5912000\n"
-        ".word 0xe3a01018, 0xe12fff32, 0xe3500000, 0x0a000002\n"
-        ".word 0xe580b008, 0xe580b00c, 0xe5c0b014, 0xe1a01004\n"
-        ".word 0xe58d400c, 0xe58d6000, 0xe1cd00f4, 0xe2850020\n"
-        ".word 0xeb013196, 0xe59d1008, 0xe2204001, 0xe1a0000d\n"
-        ".word 0xe3510000, 0x11510000, 0x1a000008, 0xe59d0004\n"
-        ".word 0xe3500000, 0x0a00000b, 0xe59d0000, 0xe59d1004\n"
-        ".word 0xe5902000, 0xe5922004, 0xe12fff32, 0xea000005\n"
-        ".word 0xe59d000c, 0xe581000c, 0xe1cd00d8, 0xe5810008\n"
-        ".word 0xe58db008, 0xe58db00c, 0xe3540000, 0xe58db004\n"
-        ".word 0x1a000097, 0xe2577001, 0x2affffd3, 0xe5997010\n"
-        ".word 0xe5950038, 0xe2854030, 0xe1500007, 0x2a000054\n"
-        ".word 0xe5948000, 0xe3570000, 0xe1a0200b, 0xe1a0c00b\n"
-        ".word 0x0a000010, 0xe5981000, 0xe1a00008, 0xe5912000\n"
-        ".word 0xe1a01207, 0xe1a0a001, 0xe12fff32, 0xe1b06000\n"
-        ".word 0x1a000005, 0xe5981000, 0xe1a00008, 0xe1a0200a\n"
-        ".word 0xe5913008, 0xe59f121c, 0xe12fff33, 0xe1b02006\n"
-        ".word 0x11a0c007, 0x0a00002a, 0xe594700c, 0xe5943004\n"
-        ".word 0xe3570000, 0x11a01002, 0x0a00000f, 0xe1b00001\n"
-        ".word 0xe1a06003, 0xe2801010, 0xe2833010, 0x0a000008\n"
-        ".word 0xe596a000, 0xe580a000, 0xe596a004, 0xe580a004\n"
-        ".word 0xe596a00c, 0xe580a00c, 0xe58a0008, 0xe5806008\n"
-        ".word 0xe586000c, 0xe2577001, 0x1affffef, 0xe2840004\n"
-        ".word 0xe5946004, 0xe8801004, 0xe594000c, 0xe1a0a006\n"
-        ".word 0xe0867200, 0xe1560007, 0x2a00001c, 0xe1a04006\n"
-        ".word 0xe2866010, 0xe5940008, 0xe3500000, 0x11500004\n"
-        ".word 0x1a00000d, 0xe5941004, 0xe3510000, 0x0a000010\n"
-        ".word 0xe5940000, 0xe5902000, 0xe5922004, 0xe12fff32\n"
-        ".word 0xea00000b, 0xe5982000, 0xe1a01006, 0xe1a00008\n"
-        ".word 0xe5922004, 0xe12fff32, 0xea000049, 0xe594100c\n"
-        ".word 0xe580100c, 0xe1c400d8, 0xe5810008, 0xe584b008\n"
-        ".word 0xe584b00c, 0xe1560007, 0xe584b004, 0x3affffe2\n"
-        ".word 0xe5981000, 0xe1a00008, 0xe5912004, 0xe1a0100a\n"
-        ".word 0xe12fff32, 0xe5996014, 0xe5950064, 0xe1500006\n"
-        ".word 0x2a00003d, 0xe595405c, 0xe3560000, 0xe1a0100b\n"
-        ".word 0xe1a0300b, 0x0a00000f, 0xe5941000, 0xe1a00004\n"
-        ".word 0xe5912000, 0xe1a01006, 0xe12fff32, 0xe1b0b000\n"
-        ".word 0x1a000005, 0xe5941000, 0xe1a00004, 0xe1a02006\n"
-        ".word 0xe5913008, 0xe59f10bc, 0xe12fff33, 0xe1b0100b\n"
-        ".word 0x11a03006, 0x0a00001e, 0xe595c068, 0xe5950060\n"
-        ".word 0xe35c0000, 0x11a0b001, 0x0a000007, 0xe1a06000\n"
-        ".word 0xe1b0200b, 0x15d66000, 0xe282b001, 0xe2800001\n"
-        ".word 0x15c26000, 0xe25cc001, 0x1afffff7, 0xe2850060\n"
-        ".word 0xe5952060, 0xe880000a, 0xe5950068, 0xe0800002\n"
-        ".word 0xe0400002, 0xe3500000, 0xda000003, 0xe1b000c0\n"
-        ".word 0x0a000001, 0xe2500001, 0x1afffffd, 0xe5940000\n"
-        ".word 0xe1a01002, 0xe5903004, 0xe1a00004, 0xe12fff33\n"
-        ".word 0xea000009, 0xe5942000, 0xe1a00004, 0xe5922004\n"
-        ".word 0xe12fff32, 0xe28dd014, 0xe3a00000, 0xe8bd8ff0\n"
-        ".word 0xe2800001, 0xe15c0000, 0x8afffe97, 0xe28dd014\n"
-        ".word 0xe3a00001, 0xe8bd8ff0, 0x0040ff98\n"
-    );
+extern "C" s32 func_003af524(u8* self, u32 key, const u8* tbl) {
+    u32 count = *reinterpret_cast<const u32*>(tbl);
+    if (count == 0u) {
+        return 1;
+    }
+    u32 found = 0u;
+    const TableEntry003af524* entry = nullptr;
+    for (u32 i = 0; i < count; ++i) {
+        const TableEntry003af524* cand = reinterpret_cast<const TableEntry003af524*>(tbl + i * 20u);
+        if (cand->key == key) {
+            entry = cand;
+            found = 1u;
+            break;
+        }
+    }
+    if (found == 0u) {
+        return 1;
+    }
+
+    if (!reserve_byte_vec_003af524(reinterpret_cast<ByteVec003af524*>(self + 0x04), entry->cap0)) {
+        return 0;
+    }
+    if (!reserve_ref_vec_003af524(reinterpret_cast<RefVec003af524*>(self + 0x20), entry->cap1)) {
+        return 0;
+    }
+
+    u32 n_items = entry->cap1;
+    for (u32 i = 0; i < n_items; ++i) {
+        AllocObj003af524* alloc = *reinterpret_cast<AllocObj003af524**>(self);
+        u8* obj = static_cast<u8*>(alloc->vtbl->alloc(alloc, 0x18u));
+        if (obj != nullptr) {
+            *reinterpret_cast<u32*>(obj + 0x08) = 0u;
+            *reinterpret_cast<u32*>(obj + 0x0C) = 0u;
+            obj[0x14] = 0u;
+        }
+        RefNode003af524 tmp;
+        tmp.alloc = alloc;
+        tmp.obj = obj;
+        tmp.prev = &tmp;
+        tmp.next = &tmp;
+        u32 ok = func_003fbe64(self + 0x20, &tmp);
+        unlink_ref_node_003af524(&tmp);
+        if (ok == 0u) {
+            return 0;
+        }
+    }
+
+    if (!reserve_ref_vec_003af524(reinterpret_cast<RefVec003af524*>(self + 0x30), entry->cap2)) {
+        return 0;
+    }
+    if (!reserve_byte_vec_003af524(reinterpret_cast<ByteVec003af524*>(self + 0x5C), entry->cap3)) {
+        return 0;
+    }
+    return 1;
 }
 
 // DECOMP_FUNC(0x003d2afc, 1488)

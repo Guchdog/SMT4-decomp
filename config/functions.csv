@@ -9641,7 +9641,7 @@ address,size,status,category,name,src_file
 0x003af3e4,24,matching,engine,engine_func_003af3e4,src/engine/leaf_batch37_a.cpp
 0x003af3fc,200,matching,ui,ui_func_003af3fc,src/engine/leaf_batch42_c.cpp
 0x003af4c4,96,matching,ui,ui_func_003af4c4,src/engine/leaf_batch23_c.cpp
-0x003af524,1484,matching,unknown,func_003af524,src/engine/leaf_batch45_c.cpp
+0x003af524,1484,non_matching,unknown,func_003af524,src/engine/leaf_batch45_c.cpp
 0x003afaf0,496,matching,unknown,func_003afaf0,src/engine/leaf_batch34_a.cpp
 0x003afce0,600,matching,unknown,func_003afce0,src/engine/leaf_batch34_a.cpp
 0x003aff38,256,matching,unknown,func_003aff38,src/engine/leaf_batch23_c.cpp
