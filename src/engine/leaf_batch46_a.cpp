@@ -843,64 +843,39 @@ extern "C" u8* effPolygonTex_func_002f3290(const u8* desc) {
     return obj;
 }
 
+extern "C" u32 engine_func_00296f60(u32 idx);
+extern "C" u32 script_vm_func_002be828_call(u32 val, u32 flag) __asm__("script_vm_func_002be828");
+extern "C" void engine_func_002bf86c(u8* buf, u32 str_val);
+extern "C" void script_vm_func_00295904(u32 slot, const u8* buf);
+extern "C" u32 script_vm_func_002bd25c(u16 val);
+extern "C" u32 camp_func_0028ebd8(s16 val, u32 flag);
+extern "C" u32 engine_func_002bcff0(u32 val);
+extern "C" void camp_func_0029f088(u32 slot, u32 val, u32 a2, u32 a3);
+
 // DECOMP_FUNC(0x00211934, 416)
-extern "C" __attribute__((naked)) void engine_func_00211934() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4030, 0xe92d, 0xd084, 0xe24d\n"
-        ".hword 0x0000, 0xe3a0, 0x1586, 0xeb02\n"
-        ".hword 0x5000, 0xe1a0, 0x0001, 0xe3a0\n"
-        ".hword 0x1583, 0xeb02, 0x4000, 0xe1a0\n"
-        ".hword 0x1080, 0xe3a0, 0x000d, 0xe1a0\n"
-        ".hword 0xcc73, 0xeb02, 0x0024, 0xe355\n"
-        ".hword 0xf105, 0x379f, 0x0056, 0xea00\n"
-        ".hword 0x19fc, 0x0021, 0x19fc, 0x0021\n"
-        ".hword 0x19fc, 0x0021, 0x19fc, 0x0021\n"
-        ".hword 0x19fc, 0x0021, 0x19fc, 0x0021\n"
-        ".hword 0x19fc, 0x0021, 0x19fc, 0x0021\n"
-        ".hword 0x1a2c, 0x0021, 0x1a2c, 0x0021\n"
-        ".hword 0x1a2c, 0x0021, 0x1a2c, 0x0021\n"
-        ".hword 0x1a2c, 0x0021, 0x1a2c, 0x0021\n"
-        ".hword 0x1a2c, 0x0021, 0x1a2c, 0x0021\n"
-        ".hword 0x1a58, 0x0021, 0x1a58, 0x0021\n"
-        ".hword 0x1a58, 0x0021, 0x1a58, 0x0021\n"
-        ".hword 0x1a88, 0x0021, 0x1a88, 0x0021\n"
-        ".hword 0x1a88, 0x0021, 0x1a88, 0x0021\n"
-        ".hword 0x1ab4, 0x0021, 0x1ab4, 0x0021\n"
-        ".hword 0x1ab4, 0x0021, 0x1ab4, 0x0021\n"
-        ".hword 0x1ab4, 0x0021, 0x1ab4, 0x0021\n"
-        ".hword 0x1ab4, 0x0021, 0x1ab4, 0x0021\n"
-        ".hword 0x19fc, 0x0021, 0x19fc, 0x0021\n"
-        ".hword 0x19fc, 0x0021, 0x19fc, 0x0021\n"
-        ".hword 0x1001, 0xe3a0, 0x0004, 0xe1a0\n"
-        ".hword 0xb387, 0xeb02, 0x1000, 0xe1a0\n"
-        ".hword 0x000d, 0xe1a0, 0xb795, 0xeb02\n"
-        ".hword 0x100d, 0xe1a0, 0x0005, 0xe1a0\n"
-        ".hword 0x0fb8, 0xeb02, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0x0026, 0xea00\n"
-        ".hword 0x0074, 0xe6ff, 0xae09, 0xeb02\n"
-        ".hword 0x1000, 0xe1a0, 0x000d, 0xe1a0\n"
-        ".hword 0xb78a, 0xeb02, 0x100d, 0xe1a0\n"
-        ".hword 0x0005, 0xe1a0, 0x0fad, 0xeb02\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0x001b, 0xea00, 0x0074, 0xe6bf\n"
-        ".hword 0x1001, 0xe3a0, 0xf45c, 0xeb01\n"
-        ".hword 0x1000, 0xe1a0, 0x000d, 0xe1a0\n"
-        ".hword 0xb77e, 0xeb02, 0x100d, 0xe1a0\n"
-        ".hword 0x0005, 0xe1a0, 0x0fa1, 0xeb02\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0x000f, 0xea00, 0x0004, 0xe1a0\n"
-        ".hword 0xad57, 0xeb02, 0x1000, 0xe1a0\n"
-        ".hword 0x000d, 0xe1a0, 0xb773, 0xeb02\n"
-        ".hword 0x100d, 0xe1a0, 0x0005, 0xe1a0\n"
-        ".hword 0x0f96, 0xeb02, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0x0004, 0xea00\n"
-        ".hword 0x3000, 0xe3a0, 0x2000, 0xe3e0\n"
-        ".hword 0x1004, 0xe1a0, 0x0005, 0xe1a0\n"
-        ".hword 0x356f, 0xeb02, 0xd084, 0xe28d\n"
-        ".hword 0x0001, 0xe3a0, 0x8030, 0xe8bd\n"
-    );
-};
+extern "C" u32 engine_func_00211934() {
+    const u32 slot = engine_func_00296f60(0u);
+    const u32 val = engine_func_00296f60(1u);
+    u8 buf[0x80];
+    engine_func_002c4b30(buf, 0x80u);
+
+    if (slot <= 7u || (slot >= 32u && slot <= 35u)) {
+        engine_func_002bf86c(buf, script_vm_func_002be828_call(val, 1u));
+        script_vm_func_00295904(slot, buf);
+    } else if (slot <= 15u) {
+        engine_func_002bf86c(buf, script_vm_func_002bd25c(static_cast<u16>(val)));
+        script_vm_func_00295904(slot, buf);
+    } else if (slot <= 19u) {
+        engine_func_002bf86c(buf, camp_func_0028ebd8(static_cast<s16>(val), 1u));
+        script_vm_func_00295904(slot, buf);
+    } else if (slot <= 23u) {
+        engine_func_002bf86c(buf, engine_func_002bcff0(val));
+        script_vm_func_00295904(slot, buf);
+    } else if (slot <= 31u) {
+        camp_func_0029f088(slot, val, 0xFFFFFFFFu, 0u);
+    }
+    return 1u;
+}
 
 // DECOMP_FUNC(0x002a2b90, 420)
 extern "C" __attribute__((naked)) void func_002a2b90() {
