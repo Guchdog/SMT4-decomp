@@ -781,62 +781,67 @@ extern "C" void engine_func_002ee514() {
     }
 }
 
+extern "C" u8* engine_func_002c34a4(u32 a0, u32 a1, u32 a2, u32 size, u32 align, u32 a5);
+extern "C" void engine_func_002c4b30(void* dst, u32 size);
+extern "C" u32 effGeometry_func_002474a0(u32 a0, u32 a1, u32 a2, u32 tag, u32 size);
+extern "C" const void* engine_func_0024c60c(const u8* desc);
+extern "C" void engine_func_002c5ff4(void* dst, const void* src, u32 size);
+extern "C" u32 engine_func_0024c5ec(const u8* desc);
+extern "C" void engine_func_0024745c(u32 geom, u32 data);
+extern "C" u32 effP2A_func_00249324(u32 data);
+extern "C" u32 engine_func_0024c5dc(u16 id);
+extern "C" void engine_func_00269758(u32 tex);
+extern "C" u32 effTLP_func_00249588(u32 data);
+
 // DECOMP_FUNC(0x002f3290, 396)
-extern "C" __attribute__((naked)) void effPolygonTex_func_002f3290() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x4030, 0xe92d, 0x5000, 0xe1a0\n"
-        ".hword 0x0170, 0xe59f, 0xd00c, 0xe24d\n"
-        ".hword 0x1024, 0xe3a0, 0x0000, 0xe1a0\n"
-        ".hword 0x1001, 0xe3a0, 0x0010, 0xe3a0\n"
-        ".hword 0x00f0, 0xe1cd, 0x30d4, 0xe3a0\n"
-        ".hword 0x2000, 0xe3a0, 0x1c01, 0xe3a0\n"
-        ".hword 0x0801, 0xe3a0, 0x4076, 0xebff\n"
-        ".hword 0x4000, 0xe1a0, 0x10d4, 0xe3a0\n"
-        ".hword 0x4616, 0xebff, 0x1000, 0xe3a0\n"
-        ".hword 0x1000, 0xe584, 0x1004, 0xe584\n"
-        ".hword 0x0a4b, 0xed9f, 0x1008, 0xe584\n"
-        ".hword 0x100c, 0xe584, 0x0a03, 0xed84\n"
-        ".hword 0x1010, 0xe584, 0x1014, 0xe584\n"
-        ".hword 0x1018, 0xe584, 0x101c, 0xe584\n"
-        ".hword 0x0a07, 0xed84, 0x0000, 0xe3e0\n"
-        ".hword 0x0024, 0xe584, 0x0000, 0xe355\n"
-        ".hword 0x0a08, 0xed84, 0x003a, 0x0a00\n"
-        ".hword 0x004c, 0xe3a0, 0x0000, 0xe58d\n"
-        ".hword 0x30f0, 0xe59f, 0x2004, 0xe3a0\n"
-        ".hword 0x1002, 0xe3a0, 0x0001, 0xe3a0\n"
-        ".hword 0x505a, 0xebfd, 0x00c8, 0xe584\n"
-        ".hword 0x00bc, 0xe1d5, 0x0028, 0xe584\n"
-        ".hword 0x0005, 0xe1a0, 0x64b0, 0xebfd\n"
-        ".hword 0x1000, 0xe1a0, 0x2098, 0xe3a0\n"
-        ".hword 0x0030, 0xe284, 0x4b26, 0xebff\n"
-        ".hword 0x0005, 0xe1a0, 0x64a2, 0xebfd\n"
-        ".hword 0x0000, 0xe350, 0x0026, 0x0a00\n"
-        ".hword 0x11bc, 0xe1d5, 0x000a, 0xe351\n"
-        ".hword 0xf101, 0x379f, 0x0022, 0xea00\n"
-        ".hword 0x3404, 0x002f, 0x33a0, 0x002f\n"
-        ".hword 0x33bc, 0x002f, 0x3404, 0x002f\n"
-        ".hword 0x33d0, 0x002f, 0x3404, 0x002f\n"
-        ".hword 0x3404, 0x002f, 0x33f8, 0x002f\n"
-        ".hword 0x3404, 0x002f, 0x33a0, 0x002f\n"
-        ".hword 0x20c8, 0xe594, 0x1000, 0xe1a0\n"
-        ".hword 0x0002, 0xe1a0, 0x502a, 0xebfd\n"
-        ".hword 0xf000, 0xe320, 0xf000, 0xe320\n"
-        ".hword 0x0011, 0xea00, 0xf000, 0xe320\n"
-        ".hword 0x57d7, 0xebfd, 0x00d0, 0xe584\n"
-        ".hword 0xf000, 0xe320, 0x000c, 0xea00\n"
-        ".hword 0x0000, 0xe590, 0x50c8, 0xe594\n"
-        ".hword 0x0070, 0xe6ff, 0x647e, 0xebfd\n"
-        ".hword 0x0004, 0xe585, 0xf000, 0xe320\n"
-        ".hword 0xd8da, 0xebfd, 0xf000, 0xe320\n"
-        ".hword 0xf000, 0xe320, 0x0002, 0xea00\n"
-        ".hword 0xf000, 0xe320, 0x5861, 0xebfd\n"
-        ".hword 0x00cc, 0xe584, 0xd00c, 0xe28d\n"
-        ".hword 0x0004, 0xe1a0, 0x8030, 0xe8bd\n"
-        ".hword 0x0208, 0x0041, 0x0000, 0x3f80\n"
-        ".hword 0x37c2, 0x0047\n"
-    );
-};
+extern "C" u8* effPolygonTex_func_002f3290(const u8* desc) {
+    u8* const obj = engine_func_002c34a4(0x10000u, 0x100u, 0u, 0xD4u, 0x10u, 1u);
+    engine_func_002c4b30(obj, 0xD4u);
+
+    for (u32 off = 0u; off <= 0x18u; off += 4u) {
+        *reinterpret_cast<u32*>(obj + off) = 0u;
+    }
+    *reinterpret_cast<f32*>(obj + 0x0Cu) = 1.0f;
+    *reinterpret_cast<f32*>(obj + 0x1Cu) = 1.0f;
+    *reinterpret_cast<f32*>(obj + 0x20u) = 1.0f;
+    *reinterpret_cast<s32*>(obj + 0x24u) = -1;
+
+    if (desc == nullptr) {
+        return obj;
+    }
+
+    *reinterpret_cast<u32*>(obj + 0xC8u) =
+        effGeometry_func_002474a0(1u, 2u, 4u, 0x004737C2u, 0x4Cu);
+    *reinterpret_cast<u32*>(obj + 0x28u) = *reinterpret_cast<const u16*>(desc + 0x0Cu);
+    engine_func_002c5ff4(obj + 0x30u, engine_func_0024c60c(desc), 0x98u);
+
+    const u32 data = engine_func_0024c5ec(desc);
+    if (data != 0u) {
+        const u16 kind = *reinterpret_cast<const u16*>(desc + 0x1Cu);
+        switch (kind) {
+        case 1u:
+        case 9u:
+            engine_func_0024745c(*reinterpret_cast<u32*>(obj + 0xC8u), data);
+            break;
+        case 2u:
+            *reinterpret_cast<u32*>(obj + 0xD0u) = effP2A_func_00249324(data);
+            break;
+        case 4u: {
+            const u32 tex = engine_func_0024c5dc(*reinterpret_cast<const u16*>(data));
+            u32* const geom = *reinterpret_cast<u32* const*>(obj + 0xC8u);
+            geom[1] = tex;
+            engine_func_00269758(tex);
+            break;
+        }
+        case 7u:
+            *reinterpret_cast<u32*>(obj + 0xCCu) = effTLP_func_00249588(data);
+            break;
+        default:
+            break;
+        }
+    }
+    return obj;
+}
 
 // DECOMP_FUNC(0x00211934, 416)
 extern "C" __attribute__((naked)) void engine_func_00211934() {
