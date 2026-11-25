@@ -1565,77 +1565,83 @@ extern "C" u32 script_vm_func_001f4b68() {
     return reinterpret_cast<u32 (*)(u32)>(0x002060cc)(val);
 }
 
+extern "C" void ui_func_00250fc4(u16 item_id, s32 count);
+extern "C" const u8* camp_func_002b4854(u16 item_id);
+extern "C" const u8* engine_func_002b47cc(u16 item_id);
+extern "C" const u8* camp_func_0022e58c(u16 item_id);
+extern "C" void script_vm_func_00295cbc(u16 item_id, s32 count);
+extern "C" s32 camp_func_00297688();
+extern "C" void shop_func_00295ea8(s32 delta);
+extern "C" void camp_func_0029c0fc(u32 msg_id, u32 amount);
+
 // DECOMP_FUNC(0x0023088c, 516)
-extern "C" __attribute__((naked)) void shop_func_0023088c() {
-    asm volatile(
-        ".arm\n"
-        ".hword 0x47f0, 0xe92d, 0x6000, 0xe1a0\n"
-        ".hword 0x8002, 0xe1a0, 0x7001, 0xe1a0\n"
-        ".hword 0x00b0, 0xe1d0, 0x0000, 0xe350\n"
-        ".hword 0x0076, 0x0a00, 0x91d8, 0xe59f\n"
-        ".hword 0xa1d8, 0xe59f, 0x0000, 0xe357\n"
-        ".hword 0x0034, 0xaa00, 0x7000, 0xe261\n"
-        ".hword 0x1007, 0xe1a0, 0x81bf, 0xeb00\n"
-        ".hword 0x0000, 0xe358, 0x006d, 0x0a00\n"
-        ".hword 0x40b0, 0xe1d6, 0x5000, 0xe3a0\n"
-        ".hword 0x0004, 0xe1a0, 0xf75c, 0xeb01\n"
-        ".hword 0x000b, 0xe350, 0xf100, 0x379f\n"
-        ".hword 0x001b, 0xea00, 0x0958, 0x0023\n"
-        ".hword 0x0914, 0x0023, 0x092c, 0x0023\n"
-        ".hword 0x092c, 0x0023, 0x092c, 0x0023\n"
-        ".hword 0x092c, 0x0023, 0x092c, 0x0023\n"
-        ".hword 0x092c, 0x0023, 0x092c, 0x0023\n"
-        ".hword 0x0958, 0x0023, 0x0944, 0x0023\n"
-        ".hword 0x0004, 0xe1a0, 0x0fcd, 0xeb02\n"
-        ".hword 0x0000, 0xe350, 0x507c, 0x1590\n"
-        ".hword 0x000b, 0x1a00, 0x0015, 0xea00\n"
-        ".hword 0x0004, 0xe1a0, 0x0fa5, 0xeb02\n"
-        ".hword 0x0000, 0xe350, 0x50a0, 0x1590\n"
-        ".hword 0x0005, 0x1a00, 0x000f, 0xea00\n"
-        ".hword 0x0004, 0xe1a0, 0xf70f, 0xebff\n"
-        ".hword 0x0000, 0xe350, 0x502c, 0x1590\n"
-        ".hword 0x000a, 0x0a00, 0x00b2, 0xe1d6\n"
-        ".hword 0x0002, 0xe310, 0x0005, 0x0a00\n"
-        ".hword 0x0b00, 0xe1a0, 0x0c20, 0xe1a0\n"
-        ".hword 0x0590, 0xe000, 0x109a, 0xe0c0\n"
-        ".hword 0x12c0, 0xe1a0, 0x5fc0, 0xe041\n"
-        ".hword 0x0795, 0xe004, 0x0030, 0xea00\n"
-        ".hword 0x5009, 0xe1a0, 0xfff2, 0xeaff\n"
-        ".hword 0xf000, 0xe320, 0x94c9, 0xeb01\n"
-        ".hword 0x0000, 0xe358, 0xf000, 0xe320\n"
-        ".hword 0x0038, 0x0a00, 0x50b0, 0xe1d6\n"
-        ".hword 0x4000, 0xe3a0, 0x0005, 0xe1a0\n"
-        ".hword 0xf727, 0xeb01, 0x0009, 0xe350\n"
-        ".hword 0xf100, 0x379f, 0x0013, 0xea00\n"
-        ".hword 0x0a0c, 0x0023, 0x09e0, 0x0023\n"
-        ".hword 0x09f8, 0x0023, 0x09f8, 0x0023\n"
-        ".hword 0x09f8, 0x0023, 0x09f8, 0x0023\n"
-        ".hword 0x09f8, 0x0023, 0x09f8, 0x0023\n"
-        ".hword 0x09f8, 0x0023, 0x0005, 0xe1a0\n"
-        ".hword 0x0f9a, 0xeb02, 0x0000, 0xe350\n"
-        ".hword 0x4078, 0x1590, 0x0005, 0x1a00\n"
-        ".hword 0x001c, 0xea00, 0x0005, 0xe1a0\n"
-        ".hword 0x0f72, 0xeb02, 0x0000, 0xe350\n"
-        ".hword 0x409c, 0x1590, 0x0017, 0x0a00\n"
-        ".hword 0x00b2, 0xe1d6, 0x0002, 0xe310\n"
-        ".hword 0x0005, 0x0a00, 0x0b00, 0xe1a0\n"
-        ".hword 0x0c20, 0xe1a0, 0x0490, 0xe000\n"
-        ".hword 0x109a, 0xe0c0, 0x12c0, 0xe1a0\n"
-        ".hword 0x4fc0, 0xe041, 0xf000, 0xe320\n"
-        ".hword 0x9b13, 0xeb01, 0x0002, 0xe350\n"
-        ".hword 0x4084, 0x0084, 0x0000, 0xe264\n"
-        ".hword 0x0790, 0xe004, 0x0004, 0xe1a0\n"
-        ".hword 0x9515, 0xeb01, 0x0000, 0xe354\n"
-        ".hword 0xf000, 0xe320, 0x0005, 0xaa00\n"
-        ".hword 0x1000, 0xe264, 0x47f0, 0xe8bd\n"
-        ".hword 0x001e, 0xe3a0, 0xada3, 0xea01\n"
-        ".hword 0x4009, 0xe1a0, 0xffe5, 0xeaff\n"
-        ".hword 0x1004, 0xe1a0, 0x47f0, 0xe8bd\n"
-        ".hword 0x001f, 0xe3a0, 0xad9d, 0xea01\n"
-        ".hword 0x87f0, 0xe8bd, 0xe0ff, 0x05f5\n"
-        ".hword 0x851f, 0x51eb\n"
-    );
-};
+extern "C" void shop_func_0023088c(const u16* item, s32 count, s32 pay_flag) {
+    u16 id = item[0];
+    if (id == 0) {
+        return;
+    }
+
+    constexpr s32 kFallbackPrice = 99999999;
+    s32 delta = 0;
+
+    if (count < 0) {
+        s32 qty = -count;
+        ui_func_00250fc4(id, qty);
+        if (pay_flag == 0) {
+            return;
+        }
+        u16 id2 = item[0];
+        s32 unit_price = 0;
+        u32 kind = shop_func_002ae650(id2);
+        if (kind == 1) {
+            const u8* p = camp_func_002b4854(id2);
+            unit_price = p ? *reinterpret_cast<const s32*>(p + 0x7c) : kFallbackPrice;
+        } else if (kind >= 2 && kind <= 8) {
+            const u8* p = engine_func_002b47cc(id2);
+            unit_price = p ? *reinterpret_cast<const s32*>(p + 0xa0) : kFallbackPrice;
+        } else if (kind == 10) {
+            const u8* p = camp_func_0022e58c(id2);
+            unit_price = p ? *reinterpret_cast<const s32*>(p + 0x2c) : kFallbackPrice;
+        }
+        u16 flags = item[1];
+        if ((flags & 2) != 0) {
+            s32 pct = static_cast<s32>((flags >> 2) & 0xff);
+            unit_price = (pct * unit_price) / 100;
+        }
+        delta = unit_price * qty;
+    } else {
+        script_vm_func_00295cbc(id, count);
+        if (pay_flag == 0) {
+            return;
+        }
+        u16 id2 = item[0];
+        s32 unit_price = 0;
+        u32 kind = shop_func_002ae650(id2);
+        if (kind == 1) {
+            const u8* p = camp_func_002b4854(id2);
+            unit_price = p ? *reinterpret_cast<const s32*>(p + 0x78) : kFallbackPrice;
+        } else if (kind >= 2 && kind <= 8) {
+            const u8* p = engine_func_002b47cc(id2);
+            unit_price = p ? *reinterpret_cast<const s32*>(p + 0x9c) : kFallbackPrice;
+        }
+        u16 flags = item[1];
+        if ((flags & 2) != 0) {
+            s32 pct = static_cast<s32>((flags >> 2) & 0xff);
+            unit_price = (pct * unit_price) / 100;
+        }
+        if (camp_func_00297688() == 2) {
+            unit_price *= 3;
+        }
+        delta = (-unit_price) * count;
+    }
+
+    shop_func_00295ea8(delta);
+    if (delta < 0) {
+        camp_func_0029c0fc(0x1e, static_cast<u32>(-delta));
+    } else {
+        camp_func_0029c0fc(0x1f, static_cast<u32>(delta));
+    }
+}
 
 // DECOMP_FUNC(0x002af648, 524)
 extern "C" __attribute__((naked)) void engine_func_002af648() {
