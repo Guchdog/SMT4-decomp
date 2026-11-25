@@ -9850,7 +9850,7 @@ address,size,status,category,name,src_file
 0x003c3460,8,matching,unknown,func_003c3460,src/engine/leaf_batch36_c.cpp
 0x003c3468,288,matching,ui,ui_func_003c3468,src/engine/leaf_batch36_b.cpp
 0x003c3588,104,matching,battle,battle_func_003c3588,src/engine/leaf_batch13_c.cpp
-0x003c35f0,1588,matching,battle,battle_func_003c35f0,src/engine/leaf_batch45_c.cpp
+0x003c35f0,1588,non_matching,battle,battle_func_003c35f0,src/engine/leaf_batch45_c.cpp
 0x003c3c24,936,non_matching,battle,battle_func_003c3c24,src/engine/leaf_batch45_b.cpp
 0x003c3fcc,776,matching,battle,battle_func_003c3fcc,src/engine/leaf_batch36_b.cpp
 0x003c42d4,1144,non_matching,battle,battle_func_003c42d4,src/engine/leaf_batch45_c.cpp
